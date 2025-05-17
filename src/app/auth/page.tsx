@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import { poppins } from "@/lib/fonts";
 import Link from "next/link";
 
