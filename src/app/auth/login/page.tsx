@@ -27,7 +27,7 @@ export default function Login() {
                     <InputField width="w-[462px]" helperText="input your password" label="Password" placeholder="password" name="password" value={formData.password} onChange={handleChange} required fullWidth/>
                     <div className="flex flex-col gap-5 items-center">
                         <input type="submit" value="Sign in" className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-[19.5px] py-[13.5px] rounded-[60px]"/>
-                        <p className="text-sm text-center text-[var(--charcoal-black)]">Don't have an account? <Link href="/auth/register" className="font-bold">Sign up</Link></p>
+                        <p className="text-sm text-center text-[var(--charcoal-black)]">Don&apos;t have an account? <Link href="/auth/register" className="font-bold">Sign up</Link></p>
                     </div>
                 </form>
             </div>
