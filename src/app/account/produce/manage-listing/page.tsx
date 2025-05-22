@@ -10,9 +10,26 @@ const ManageListingPage = () => {
   const [listings, setListings] = useState<StoredListing[]>([]);
 
   useEffect(() => {
+    loadListings();
+  }, []);
+
+  const loadListings = () => {
     const storedListings = JSON.parse(localStorage.getItem("listings") || "[]");
     setListings(storedListings);
-  }, []);
+  };
+
+  const deleteListing = (index: number) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) {
+      return;
+    }
+
+    const updatedListings = [...listings];
+    updatedListings.splice(index, 1);
+
+    localStorage.setItem("listings", JSON.stringify(updatedListings));
+
+    setListings(updatedListings);
+  };
 
   return (
     <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
@@ -35,6 +52,7 @@ const ManageListingPage = () => {
                     src={listing.produceImages[0].base64}
                     alt="produce-image"
                     fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -60,6 +78,7 @@ const ManageListingPage = () => {
                   <Button
                     variant={"ghost"}
                     className="hover:bg-white/10 cursor-pointer"
+                    onClick={() => deleteListing(idx)}
                   >
                     <Trash2 />
                   </Button>

@@ -42,3 +42,21 @@ export async function removeFromCart(id: string): Promise<Crop[]> {
 export async function clearCart(): Promise<void> {
   (await cookies()).delete("cart");
 }
+
+export async function setRoleCookie(role: string) {
+  (await cookies()).set("user_role", role, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+}
+
+export async function getRoleCookie(): Promise<string | undefined> {
+  return (await cookies()).get("user_role")?.value;
+}
+
+
+export async function removeRoleCookie() {
+  (await cookies()).delete("user_role");
+}

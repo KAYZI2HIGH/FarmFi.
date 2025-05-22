@@ -9,17 +9,28 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { buyerSidebarLinks, ROLE, farmerSidebarLinks } from "@/lib/constants";
+import { getRoleCookie } from "@/lib/actions";
+import { buyerSidebarLinks, farmerSidebarLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-// Menu items.
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const items = ROLE === "buyer" ? buyerSidebarLinks : farmerSidebarLinks;
+  const [role, setRole] = useState<string | undefined>();
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const user_role = await getRoleCookie();
+      setRole(user_role);
+    };
+    fetchRole();
+  });
+
+  const items = role === "buyer" ? buyerSidebarLinks : farmerSidebarLinks;
 
   return (
     <Sidebar className="text-[#F4F4F4] font-semibold text-[15px] tracking-wide">

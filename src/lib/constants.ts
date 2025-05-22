@@ -253,7 +253,7 @@ export const farmerSidebarLinks = [
   },
   {
     title: "Produce Listings",
-    url: "/account/produce-listings",
+    url: "/account/produce",
     icon: "/icons/file_fill.svg",
   },
   {
