@@ -11,7 +11,7 @@ import React from "react";
 const page = async ({ searchParams }: { searchParams: Promise<{ query: string }> }) => {
   const {query} = await searchParams
   return (
-    <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
+    <section className="space-y-[40px]  w-full px-5 lg:px-[60px]">
       <div className="flex justify-center items-center relative">
         <SidebarTrigger className="absolute left-0 md:hidden" />
         <h1 className="text-[15px] font-semibold">Marketplace</h1>
