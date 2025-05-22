@@ -1,0 +1,44 @@
+'use server'
+
+import { cookies } from "next/headers";
+
+export async function getCart(): Promise<Crop[]> {
+  const cart = (await cookies()).get("cart")?.value;
+  return cart ? JSON.parse(cart) : [];
+}
+
+export async function saveCart(cart: Crop[]): Promise<void> {
+  (await cookies()).set("cart", JSON.stringify(cart), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+  });
+}
+
+export async function addToCart(
+  item: Omit<Crop, "weight">,
+  weight: number = 1
+): Promise<Crop[]> {
+  const cart = await getCart();
+  const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+
+  if (existingItem) {
+    existingItem.weight += weight;
+  } else {
+    cart.push({ ...item, weight });
+  }
+
+  await saveCart(cart);
+  return cart;
+}
+
+export async function removeFromCart(id: string): Promise<Crop[]> {
+  const cart = (await getCart()).filter((item) => item.id !== id);
+  await saveCart(cart);
+  return cart;
+}
+
+export async function clearCart(): Promise<void> {
+  (await cookies()).delete("cart");
+}
