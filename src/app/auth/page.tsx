@@ -1,9 +1,11 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { setRoleCookie } from "@/lib/actions";
 import { poppins } from "@/lib/fonts";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Roles() {
+  const router = useRouter();
   return (
     <div className="wrapper">
       <div className="flex flex-col gap-10 items-center justify-center p-8 bg-[var(--background)]">
@@ -13,34 +15,26 @@ export default function Roles() {
         <div
           className={`buttons flex flex-col gap-5 w-full md:w-[400px] ${poppins.className} font-semibold text-lg text-white`}
         >
-          <form
-            action={async () => {
-              "use server";
-              setRoleCookie("farmer");
-            }}
-          >
             <Button
+              onClick={() => {
+                setRoleCookie("farmer");
+                router.push("/auth/farmer");
+              }}
               type="submit"
-              className="flex !py-[25px] rounded-[30px] text-center bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90 w-full font-semibold text-lg"
-              asChild
+              className="flex !py-[25px] rounded-[30px] text-center bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90 w-full font-semibold text-lg cursor-pointer"
             >
-              <Link href={"/auth/farmer"}>Farmer</Link>
+             Farmer
             </Button>
-          </form>
-          <form
-            action={async () => {
-              "use server";
+          <Button
+            onClick={() => {
               setRoleCookie("buyer");
+              router.push("/auth/buyer");
             }}
+            type="submit"
+            className="flex !py-[25px] rounded-[30px] text-center bg-[var(--chestnut-brown)] hover:bg-[var(--chestnut-brown)]/90 w-full font-semibold text-lg cursor-pointer"
           >
-            <Button
-              type="submit"
-              className="flex !py-[25px] rounded-[30px] text-center bg-[var(--chestnut-brown)] hover:bg-[var(--chestnut-brown)]/90 w-full font-semibold text-lg"
-              asChild
-            >
-              <Link href={"/auth/buyer"}>Buyer</Link>
-            </Button>
-          </form>
+            Buyer
+          </Button>
         </div>
       </div>
     </div>

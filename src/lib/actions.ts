@@ -45,7 +45,7 @@ export async function clearCart(): Promise<void> {
 
 export async function setRoleCookie(role: string) {
   (await cookies()).set("user_role", role, {
-    path: "/",
+    httpOnly: true,
     maxAge: 60 * 60 * 24 * 7, // 1 week
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",

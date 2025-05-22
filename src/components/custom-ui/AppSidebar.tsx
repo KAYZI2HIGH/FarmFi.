@@ -14,12 +14,13 @@ import { buyerSidebarLinks, farmerSidebarLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter()
   const [role, setRole] = useState<string | undefined>();
 
   useEffect(() => {
@@ -70,8 +71,11 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenuButton
+          onClick={() => {
+            router.push('/auth')
+          }}
           className={
-            "py-5 hover:bg-white/40 transition-all duration-200 ease-in-out flex justify-center hover:text-white"
+            "py-5 hover:bg-white/40 transition-all duration-200 ease-in-out flex justify-center hover:text-white cursor-pointer"
           }
         >
           <Image

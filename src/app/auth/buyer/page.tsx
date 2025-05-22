@@ -1,8 +1,9 @@
 "use client";
 
 import InputField from "@/components/InputField";
+import { getRoleCookie } from "@/lib/actions";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function BuyerRegister() {
   const [formData, setFormData] = useState({
@@ -23,6 +24,15 @@ export default function BuyerRegister() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+  const [role, setRole] = useState<string | undefined>();
+ 
+   useEffect(() => {
+     const fetchRole = async () => {
+       const user_role = await getRoleCookie();
+       setRole(user_role);
+     };
+     fetchRole();
+   });
   return (
     <div className="wrapper space-y-10">
       <h1 className="text-[22px] font-medium text-center">
@@ -34,7 +44,10 @@ export default function BuyerRegister() {
             Create new account
           </h2>
         </div>
-        <form className="flex flex-col gap-5 items-center" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-5 items-center"
+          onSubmit={handleSubmit}
+        >
           <div className="grid grid-cols-2 gap-x-[117px]">
             <InputField
               label="First name"
@@ -109,15 +122,26 @@ export default function BuyerRegister() {
               required
             />
           </div>
-          <input
+          <Link
+            href={
+              role === "buyer" ? "/account/marketplace" : "/account/produce"
+            }
+            className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
+          >
+            Sign up
+          </Link>
+          {/* <input
             type="submit"
             value="Sign up"
             className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
-          />
+          /> */}
         </form>
         <p className="text-sm text-center text-[var(--charcoal-black)]">
           Already have an account?{" "}
-          <Link className="font-bold" href="/">
+          <Link
+            className="font-bold"
+            href="/"
+          >
             Sign in
           </Link>
         </p>

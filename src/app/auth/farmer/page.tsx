@@ -3,7 +3,8 @@
 import { poppins } from "@/lib/fonts";
 import InputField from "@/components/InputField";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getRoleCookie } from "@/lib/actions";
 
 export default function FarmerRegister() {
   const [formData, setFormData] = useState({
@@ -30,6 +31,16 @@ export default function FarmerRegister() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+
+  const [role, setRole] = useState<string | undefined>();
+ 
+   useEffect(() => {
+     const fetchRole = async () => {
+       const user_role = await getRoleCookie();
+       setRole(user_role);
+     };
+     fetchRole();
+   });
 
   return (
     <div className="wrapper space-y-10">
@@ -183,15 +194,26 @@ export default function FarmerRegister() {
               </div>
             </div>
           </div>
-          <input
+          <Link
+            href={
+              role === "buyer" ? "/account/marketplace" : "/account/produce"
+            }
+            className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
+          >
+            Sign up
+          </Link>
+          {/* <input
             type="submit"
             value={`Sign up`}
             className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
-          />
+          /> */}
         </form>
         <p className="text-sm text-center text-[var(--charcoal-black)]">
           Already have an account?{" "}
-          <Link className="font-bold" href="/">
+          <Link
+            className="font-bold"
+            href="/"
+          >
             Sign in
           </Link>
         </p>
