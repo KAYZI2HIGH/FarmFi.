@@ -15,7 +15,7 @@ const Stats = () => {
             />
             <p>{ stat.unit}</p>
           </div>
-          <p className="text-[15px] md:text-[17px] font-medium md:leading-[28px]">
+          <p className="text-[15px] md:text-[17px] font-medium md:leading-[28px] text-center">
            {stat.title}
           </p>
         </div>

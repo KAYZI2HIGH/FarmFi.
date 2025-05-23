@@ -5,6 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  linkVariants,
+  mobileMenuVariants,
+} from "@/lib/animation-variants/NavbarVariants";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,40 +21,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const mobileMenuVariants = {
-    open: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-    closed: {
-      opacity: 0,
-      y: -20,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
-
-  const linkVariants = {
-    hover: {
-      scale: 1.05,
-      color: "var(--chestnut-brown)",
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-    tap: {
-      scale: 0.95,
-    },
-  };
 
   return (
     <motion.div
@@ -207,6 +177,7 @@ const Navbar = () => {
                 <Button
                   className="w-full bg-[var(--chestnut-brown)] hover:bg-[var(--chestnut-brown)]/90 text-white"
                   onClick={() => setIsOpen(false)}
+                  asChild
                 >
                   <Link href={"/auth/login"}>Log in</Link>
                 </Button>

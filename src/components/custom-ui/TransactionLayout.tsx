@@ -6,8 +6,8 @@ const TransactionLayout = ({array}: {array: number[]}) => {
   return (
     <div className="border border-black rounded-[5px] max-w-[740px] mt-5">
       {array.map((_, idx) => (
-        <div key={idx} className="flex flex-col-reverse sm:flex-row justify-between p-[10px] border-b border-black gap-5">
-          <div className="flex gap-7">
+        <div key={idx} className="flex flex-col sm:flex-row justify-between p-[10px] border-b border-black gap-2 md:gap-5">
+          <div className="flex gap-3 max-md:items-center md:gap-7">
             <div className="size-[60px] relative overflow-hidden rounded-full">
               <Image
                 src={"/assets/avatar/david.png"}
@@ -25,7 +25,7 @@ const TransactionLayout = ({array}: {array: number[]}) => {
           </div>
           <Button
             variant={"link"}
-            className="text-[#2463EB] text-[13px] underline font-normal cursor-pointer hover:opacity-80"
+            className="text-[#2463EB] text-[13px] underline font-normal cursor-pointer hover:opacity-80 ml-auto"
           >
             Transaction details
           </Button>

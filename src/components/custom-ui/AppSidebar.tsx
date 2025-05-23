@@ -43,7 +43,7 @@ export function AppSidebar() {
           alt="FarmFi Logo"
         />
       </SidebarHeader>
-      <SidebarContent className="px-5 mt-5">
+      <SidebarContent className="px-5 mt-5 hide_scrollbar">
         <SidebarMenu className="space-y-[15px]">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>

@@ -26,6 +26,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
             <Image
               src={crop.image}
               alt="produce image"
+              className="object-cover"
               fill
             />
           </div>

@@ -6,6 +6,12 @@ import { MoveUpRight } from "lucide-react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
+import {
+  backgroundVariants,
+  buttonVariants,
+  containerVariants,
+  itemVariants,
+} from "@/lib/animation-variants/Hero";
 
 const Hero = () => {
   const controls = useAnimation();
@@ -22,71 +28,8 @@ const Hero = () => {
     }
   }, [controls, inView]);
 
-  // Enhanced animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 40,
-      filter: "blur(4px)",
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  };
-
-  const backgroundVariants = {
-    hidden: {
-      scale: 1,
-      opacity: 0.9,
-    },
-    visible: {
-      scale: 1.03,
-      opacity: 1,
-      transition: {
-        duration: 1.5,
-        ease: "circOut",
-      },
-    },
-  };
-
-  const buttonVariants = {
-    hidden: { scale: 0.95, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 10,
-        delay: 0.4,
-      },
-    },
-    hover: {
-      scale: 1.05,
-      transition: { type: "spring", stiffness: 400, damping: 10 },
-    },
-    tap: { scale: 0.98 },
-  };
-
   return (
-    <section className="px-5 md:px-[50px] pt-[100px] h-screen relative flex justify-center overflow-hidden">
+    <section className="px-5 md:px-[50px] pt-[100px] h-dvh relative flex justify-center overflow-hidden">
       <motion.div
         initial="hidden"
         animate={controls}
@@ -112,7 +55,7 @@ const Hero = () => {
       >
         <div className="max-w-[570px] space-y-[30px]">
           <motion.h1
-            className="section_title text-[38px] leading-normal"
+            className="section_title  text-[28px] md:text-[38px] leading-normal"
             variants={itemVariants}
           >
             Trading Agricultural Produce Made Seamless with Crypto

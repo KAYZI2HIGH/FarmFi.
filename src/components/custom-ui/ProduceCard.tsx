@@ -56,7 +56,9 @@ const ProduceCard = ({ crop }: { crop: Crop }) => {
           {crop.name}
         </h3>
 
-        <h1 className="text-[15px] font-bold tracking-wide">{crop.price} USDC</h1>
+        <h1 className="text-[15px] font-bold tracking-wide">
+          {crop.price} USDC
+        </h1>
 
         <p className="text-[12px] font-normal">{crop.weight} Kg</p>
       </Link>

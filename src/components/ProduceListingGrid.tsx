@@ -1,17 +1,23 @@
-'use client'
+"use client";
 import { AnimatePresence, motion } from "framer-motion";
 import ProduceCard from "./custom-ui/ProduceCard";
 
 const ProduceListingGrid = ({
   filter,
   crops,
-  query
+  query,
 }: {
   filter: string;
-    crops: Crop[];
-  query: string
+  crops: Crop[];
+  query: string;
 }) => {
-  const filteredCrops = query ? (crops.filter((crop) => crop.category === filter && crop.name.toLowerCase().includes(query?.toLowerCase()))) : crops.filter((crop) => crop.category === filter);
+  const filteredCrops = query
+    ? crops.filter(
+        (crop) =>
+          crop.category === filter &&
+          crop.name.toLowerCase().includes(query?.toLowerCase())
+      )
+    : crops.filter((crop) => crop.category === filter);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-14 gap-y-8 place-items-center">

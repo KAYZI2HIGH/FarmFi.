@@ -32,6 +32,7 @@ const JoinUs = () => {
             <div className="h-[380px] w-full relative rounded-[5px] overflow-hidden">
               <Image
                 src={"/assets/register-as-buyer.png"}
+                className="object-cover"
                 fill
                 alt="Card Image"
               />
