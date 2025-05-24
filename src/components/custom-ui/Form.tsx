@@ -34,7 +34,7 @@ export function NewListingForm() {
       produceName: "",
       type: "",
       quantity: "",
-      price: 0,
+      price: null as unknown as number,
       harvestDate: "",
       expiryDate: "",
       farmerContact: "",

@@ -547,3 +547,94 @@ export const FormInputs: FormInput[] = [
     placeholder: "contact@gmail.com",
   },
 ];
+
+export const FarmersRegisterFormInputs: FarmerRegisterFormInput[] = [
+  {
+    name: "firstName",
+    title: "First Name",
+    placeholder: "first name",
+    description: "input first name",
+  },
+  {
+    name: "lastName",
+    title: "Last Name",
+    placeholder: "last name",
+    description: "input last name",
+  },
+  {
+    name: "email",
+    title: "Email",
+    placeholder: "email address",
+    description: "input valid email address",
+    type: "email",
+  },
+  {
+    name: "phone",
+    title: "Phone Number",
+    placeholder: "e.g: +234 *** *** ****",
+    description: "phone number with country code",
+    type: "tel",
+  },
+  {
+    name: "dateOfBirth",
+    title: "Date of Birth",
+    placeholder: "dd/mm/yyyy",
+    description: "input date of birth in this format",
+  },
+  {
+    name: "address",
+    title: "Address",
+    placeholder: "house address",
+    description: "input your house address",
+  },
+  {
+    name: "nationalIdentityNumber",
+    title: "National Identity Number",
+    placeholder: "Enter your NIN",
+    description: "input your NIN",
+  },
+  {
+    name: "state",
+    title: "State",
+    placeholder: "state",
+    description: "input your state of residence",
+  },
+  {
+    name: "createPassword",
+    title: "Create Password",
+    placeholder: "must be at least 8 characters",
+    description: "must contain letters, numbers and special characters",
+    type: "password",
+  },
+  {
+    name: "reEnterPassword",
+    title: "Re-enter Password",
+    placeholder: "password",
+    description: "re-enter your password",
+    type: "password",
+  },
+  {
+    name: "type",
+    title: "Type",
+    placeholder: "type of farm",
+    description: "type such as grains, nuts, e.t.c",
+  },
+  {
+    name: "size",
+    title: "Size",
+    placeholder: "size in number",
+    description: "input size in acres (number alone)",
+  },
+  {
+    name: "produceGrown",
+    title: "Produce Grown",
+    placeholder: "e.g cocoa, beans, maize, e.t.c",
+    description: "input the product you grow",
+  },
+  {
+    name: "farmAddress",
+    title: "Farm Address",
+    placeholder: "province/state",
+    description: "input where your farm is located?",
+  },
+];

@@ -25,7 +25,7 @@ const InputField: React.FC<InputFieldProps> = ({
   required = false,
   width = "w-full",
 }) => (
-  <div className={`mb-[30px] ${fullWidth ? "col-span-2" : ""}`}>
+  <div className={`mb-[30px] max-sm:col-span-2`}>
     <label
       htmlFor={name}
       className="flex gap-2 text-[15px] font-medium text-[var(--charcoal-black)] mb-[10px]"

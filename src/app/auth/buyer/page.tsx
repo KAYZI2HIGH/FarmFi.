@@ -48,7 +48,7 @@ export default function BuyerRegister() {
           className="flex flex-col gap-5 items-center"
           onSubmit={handleSubmit}
         >
-          <div className="grid grid-cols-2 gap-x-[117px]">
+          <div className="grid sm:grid-cols-2 sm:gap-x-[117px] w-full">
             <InputField
               label="First name"
               placeholder="first name"

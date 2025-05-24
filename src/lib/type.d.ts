@@ -1,20 +1,20 @@
 interface FooterKeys {
-    title: string,
-    url?: string,
+  title: string;
+  url?: string;
 }
 
-interface FooterInfo{
-  heading: string,
+interface FooterInfo {
+  heading: string;
   content: {
-    type: 'links' | 'list',
-    keys: FooterKeys[]
-  },
+    type: "links" | "list";
+    keys: FooterKeys[];
+  };
 }
 
 interface Review {
   author: string;
   text: string;
-};
+}
 
 interface Crop {
   id: string;
@@ -29,7 +29,7 @@ interface Crop {
   rating: number;
   reviews: Review[];
   relatedCommodities: string[];
-};
+}
 
 type FormFieldName =
   | "produceName"
@@ -48,10 +48,34 @@ interface FormInput {
   description?: string;
 }
 
+type FarmerRegisterFormFieldName =
+  | "firstName"
+  | "lastName"
+  | "email"
+  | "phone"
+  | "dateOfBirth"
+  | "address"
+  | "nationalIdentityNumber"
+  | "state"
+  | "createPassword"
+  | "reEnterPassword"
+  | "type"
+  | "size"
+  | "produceGrown"
+  | "farmAddress";
+
+interface FarmerRegisterFormInput {
+  name: RegisterFormFieldName;
+  title: string;
+  placeholder: string;
+  description: string;
+  type?: string;
+}
+
 interface StoredListing {
   produceName: string;
   type: string;
-  quantity: string,
+  quantity: string;
   price: number;
   harvestDate: string;
   expiryDate: string;
