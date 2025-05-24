@@ -231,7 +231,7 @@ export const buyerSidebarLinks = [
   {
     title: "Profile",
     url: "/account/profile",
-    icon: "/icons/user_fill.svg",
+    icon: "/icons/User_fill.svg",
   },
   {
     title: "Delivery Status",
@@ -241,7 +241,7 @@ export const buyerSidebarLinks = [
   {
     title: "Dispute",
     url: "/account/dispute",
-    icon: "/icons/info_fill.svg",
+    icon: "/icons/Info_fill.svg",
   },
 ];
 
@@ -269,7 +269,7 @@ export const farmerSidebarLinks = [
   {
     title: "Profile",
     url: "/account/profile",
-    icon: "/icons/user_fill.svg",
+    icon: "/icons/User_fill.svg",
   },
   {
     title: "Delivery Status",
@@ -279,7 +279,7 @@ export const farmerSidebarLinks = [
   {
     title: "Dispute",
     url: "/account/dispute",
-    icon: "/icons/info_fill.svg",
+    icon: "/icons/Info_fill.svg",
   },
 ];
 
