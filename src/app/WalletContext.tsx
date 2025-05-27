@@ -3,7 +3,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 
-const WalletContext = createContext<any>(null);
+interface WalletContextType {
+  keypair: Ed25519Keypair | null;
+  address: string | null;
+  suiClient: SuiClient;
+}
+
+const WalletContext = createContext<WalletContextType | null>(null);
 
 export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
   const [keypair, setKeypair] = useState<Ed25519Keypair | null>(null);

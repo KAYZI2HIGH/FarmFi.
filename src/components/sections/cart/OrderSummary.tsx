@@ -2,32 +2,13 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React, { useState } from "react";
-
+import { useWallet } from "@/app/WalletContext";
 
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   
-  // const client = new SuiClient({ url: getFullnodeUrl('devnet') })
-  // const [keypair, setKeypair] = useState<Ed25519Keypair>()
   const [tx, setTx] = useState()
+  const { keypair, address, suiClient } = useWallet()
 
-  // const signSuiTransaction = async () => {
-    // const TxBlock = Transaction.from(fromBase64(tx))
-
-    // const result = await client.signAndExecuteTransaction({
-    //   signer: keypair as Ed25519Keypair,
-    //   transaction: TxBlock,
-    //   options: {
-    //     showEffects: true,
-    //     showEvents: true,
-    //     showObjectChanges: true,
-    //   },
-    // });
-    
-  // const returnedOrderAddress = result;
-  // const wait = await client.waitForTransaction({digest: result.digest})
-  // console.log(wait)
-  // console.log("Returned Order Address:", returnedOrderAddress);
-  // }
 
   const total = cart.reduce(
     (total, item) => total + item.price * item.weight,
@@ -44,18 +25,6 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   
   const handleOrder = async () => {
     console.log("sending")
-    // let res = await fetch("https://farmfi-node.onrender.com/auth/keypair", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type":"application/json"
-    //   },
-    //   body:JSON.stringify({email:"test1234@gmail.com", password:"test1234"})
-    // })
-    // const data = await res.json()
-
-    // Construct the Ed25519 keypair
-    // const keypair = Ed25519Keypair.fromSecretKey(data.keypair);
-    // setKeypair(keypair)
 
     const orderres = await fetch("https://farmfi-node.onrender.com/order/create", {
       method: "POST",
