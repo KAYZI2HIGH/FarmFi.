@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { poppins } from "@/lib/fonts";
 import {  Toaster } from "sonner";
+import { WalletProvider } from "./WalletContext";
 
 export const metadata: Metadata = {
   title: "FarmFi - Farm-to-Table Marketplace",
@@ -20,7 +21,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`antialiased ${poppins.className}`}>
-        {children}
+        <WalletProvider>
+          {children}
+        </WalletProvider>
         <Toaster
           position="top-center"
         />
