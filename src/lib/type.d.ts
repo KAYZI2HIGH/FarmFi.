@@ -16,14 +16,19 @@ interface Review {
   text: string;
 }
 
+interface farmer {
+  _id: string,
+  name: string
+}
+
 interface Crop {
-  id: string;
-  image: string;
+  _id: string;
+  imgUrl: string;
   name: string;
   price: number;
   weight: number;
   category: string;
-  seller: string;
+  farmer: farmer;
   location: string;
   description: string;
   rating: number;
@@ -64,12 +69,32 @@ type FarmerRegisterFormFieldName =
   | "produceGrown"
   | "farmAddress";
 
+type BuyersRegisterFormFieldName =
+  | "firstName"
+  | "lastName"
+  | "email"
+  | "phone"
+  | "dateOfBirth"
+  | "address"
+  | "nationalIdentityNumber"
+  | "state"
+  | "createPassword"
+  | "reEnterPassword"
+
 interface FarmerRegisterFormInput {
-  name: RegisterFormFieldName;
+  name: FarmerRegisterFormFieldName;
   title: string;
   placeholder: string;
   description: string;
   type?: string;
+}
+interface BuyersRegisterFormInput {
+  name: BuyersRegisterFormFieldName;
+  title: string;
+  placeholder: string;
+  description: string;
+  type?: string;
+  required?: boolean;
 }
 
 interface StoredListing {

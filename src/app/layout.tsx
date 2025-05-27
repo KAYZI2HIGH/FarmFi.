@@ -4,6 +4,7 @@ import { poppins } from "@/lib/fonts";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/components/custom-ui/toast";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 export const metadata: Metadata = {
   title: "FarmFi - Farm-to-Table Marketplace",
@@ -21,10 +22,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`antialiased ${poppins.className}`}>
-        <AuthProvider>
-          <ToastProvider> {children}</ToastProvider>
-        </AuthProvider>
-        <Toaster position="top-center" />
+        <QueryProvider>
+          <AuthProvider>
+            <ToastProvider> {children}</ToastProvider>
+          </AuthProvider>
+          <Toaster position="top-center" />
+        </QueryProvider>
       </body>
     </html>
   );

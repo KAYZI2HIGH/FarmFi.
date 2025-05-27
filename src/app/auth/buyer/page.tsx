@@ -1,29 +1,91 @@
 "use client";
 
-import InputField from "@/components/InputField";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 import { getRoleCookie } from "@/lib/actions";
+import { BuyersRegisterFormInputs } from "@/lib/constants";
+import { formSchema } from "@/lib/schema/RegisterSchemaForBuyers";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export default function BuyerRegister() {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    dob: "",
-    address: "",
-    nin: "",
-    state: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
+  const router = useRouter()
+  const {login} = useAuth()
+   const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        dateOfBirth: "",
+        address: "",
+        nationalIdentityNumber: "",
+        state: "",
+        createPassword: "",
+        reEnterPassword: "",
+      },
+    });
+  
+    const {
+      formState: { isSubmitting },
+    } = form;
+  
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        dateOfBirth,
+        address,
+        nationalIdentityNumber,
+        state,
+        createPassword,
+        reEnterPassword,
+      } = values;
+      try {
+        const response = await fetch(
+          "https://farmfi-node.onrender.com/auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              email,
+              phone,
+              dateOfBirth,
+              address,
+              nationalIdentityNumber,
+              state,
+              createPassword,
+              reEnterPassword,
+            }),
+          }
+        );
+  
+        const data = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(data.message || "Login failed");
+        }
+  
+        login(data.token);
+        router.push("/dashboard");
+      } catch (err) {
+        throw new Error("Login failed");
+      }
+    }
   const [role, setRole] = useState<string | undefined>();
  
    useEffect(() => {
@@ -44,98 +106,59 @@ export default function BuyerRegister() {
             Create new account
           </h2>
         </div>
-        <form
-          className="flex flex-col gap-5 items-center"
-          onSubmit={handleSubmit}
-        >
-          <div className="grid sm:grid-cols-2 sm:gap-x-[117px] w-full">
-            <InputField
-              label="First name"
-              placeholder="first name"
-              name="firstName"
-              helperText="input first name"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="Last name"
-              placeholder="last name"
-              name="lastName"
-              helperText="input last name"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="Email Address"
-              placeholder="email address"
-              name="email"
-              helperText="input valid email address"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="Phone number"
-              placeholder="e.g: +234 *** *** ****"
-              name="phoneNumber"
-              helperText="phone number with country code"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="Date of Birth"
-              placeholder="dd/mm/yyyy"
-              name="dob"
-              helperText="input date of birth in this format"
-              value={formData.dob}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="Address"
-              placeholder="house address"
-              name="address"
-              helperText="input your house address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="National Identity Number"
-              placeholder="NIN"
-              name="nin"
-              helperText="input your nin"
-              value={formData.nin}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              label="State"
-              placeholder="state"
-              name="state"
-              helperText="input the state you live"
-              value={formData.state}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <Link
-            href={
-              role === "buyer" ? "/account/marketplace" : "/account/produce"
-            }
-            className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
-          >
-            Sign up
-          </Link>
-          {/* <input
-            type="submit"
-            value="Sign up"
-            className="bg-[var(--forest-green)] cursor-pointer text-white text-[15px] px-4 py-[13.5px] rounded-[60px]"
-          /> */}
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid md:grid-cols-2 gap-8 w-full h-full pb-10">
+              {BuyersRegisterFormInputs.map((input, idx) => {
+                  return (
+                    <FormField
+                      key={idx}
+                      control={form.control}
+                      name={input.name}
+                      render={({ field }) => (
+                        <FormItem className="w-full md:max-w-[300px] max-sm:col-span-2">
+                          <FormLabel className="flex gap-2 text-[15px] font-medium text-[var(--charcoal-black)] mb-[10px]">
+                            {input.title}
+                            {input.required && (
+                              <span className="text-red-500">*</span>
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              aria-label={input.title}
+                              aria-describedby={`${input.name}-description`}
+                              className="border-black border-0 border-b-[1.5] shadow-none outline-none bg-transparent focus-visible:outline-none focus-visible:ring-0   rounded-none text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide px-0"
+                              type={input.title === "Price" ? "number" : "text"}
+                              placeholder={input.placeholder}
+                              {...field}
+                            />
+                          </FormControl>
+                          {input.description && (
+                            <FormDescription className="text-[12px] font-light italic text-black">
+                              {input.description}
+                            </FormDescription>
+                          )}
+                          <FormMessage id={`${input.name}-error`} />
+                        </FormItem>
+                      )}
+                    />
+                  );
+              })}
+            </div>
+            <div className="flex flex-col md:flex-row justify-center gap-10 w-full col-span-2">
+              <Button
+                disabled={isSubmitting}
+                className="group bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90  p-6 call_to_action_btn_text"
+                type="submit"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Submit
+              </Button>
+            </div>
+          </form>
+        </Form>
         <p className="text-sm text-center text-[var(--charcoal-black)]">
           Already have an account?{" "}
           <Link

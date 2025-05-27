@@ -125,10 +125,9 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
       </div>
       <Button
         className="group bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90 rounded-full px-6 py-4 call_to_action_btn_text w-full"
-        asChild
+       
         onClick={handleOrder}
-      >
-        <Link href={""}>Pay now</Link>
+      >Pay now
       </Button>
     </div>
   );

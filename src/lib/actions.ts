@@ -21,7 +21,7 @@ export async function addToCart(
   weight: number = 1
 ): Promise<Crop[]> {
   const cart = await getCart();
-  const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+  const existingItem = cart.find((cartItem) => cartItem._id === item._id);
 
   if (existingItem) {
     existingItem.weight += weight;
@@ -34,7 +34,7 @@ export async function addToCart(
 }
 
 export async function removeFromCart(id: string): Promise<Crop[]> {
-  const cart = (await getCart()).filter((item) => item.id !== id);
+  const cart = (await getCart()).filter((item) => item._id !== id);
   await saveCart(cart);
   return cart;
 }
@@ -59,4 +59,9 @@ export async function getRoleCookie(): Promise<string | undefined> {
 
 export async function removeRoleCookie() {
   (await cookies()).delete("user_role");
+}
+
+export async function getAllProduce() {
+  const response = await fetch("https://farmfi-node.onrender.com/product/all");
+  return response.json();
 }
