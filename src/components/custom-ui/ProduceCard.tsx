@@ -26,7 +26,7 @@ const ProduceCard = ({ crop }: { crop: Crop }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", damping: 20, stiffness: 150 }}
     >
-      <Link href={`/account/produce/${crop.id}`}>
+      <Link href={`/account/produce/${crop._id}`}>
         <motion.div
           className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none "
           style={{ background }}
@@ -45,7 +45,7 @@ const ProduceCard = ({ crop }: { crop: Crop }) => {
           }}
         >
           <Image
-            src={crop.image}
+            src={crop.imgUrl}
             fill
             alt={crop.name}
             className="object-cover transition-transform duration-700 group-hover:scale-105"

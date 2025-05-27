@@ -9,6 +9,7 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   // const client = new SuiClient({ url: getFullnodeUrl('devnet') })
   // const [keypair, setKeypair] = useState<Ed25519Keypair>()
   const [tx, setTx] = useState()
+<<<<<<< HEAD
 
   // const signSuiTransaction = async () => {
     // const TxBlock = Transaction.from(fromBase64(tx))
@@ -28,6 +29,18 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   // console.log(wait)
   // console.log("Returned Order Address:", returnedOrderAddress);
   // }
+=======
+  // Importing the variables for signing transactions
+  const { keypair, address, suiClient } = useWallet()
+
+  //to bypass unsued variable check
+  console.log(
+    keypair,
+    address,
+    suiClient
+  )
+
+>>>>>>> 99a6dc03a00077ef8c7db16a93811fed997cedbd
 
   const total = cart.reduce(
     (total, item) => total + item.price * item.weight,
