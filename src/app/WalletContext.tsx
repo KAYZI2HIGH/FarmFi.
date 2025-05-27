@@ -1,4 +1,5 @@
 // context/WalletContext.tsx
+"use client"
 import { createContext, useContext, useEffect, useState } from 'react';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
@@ -20,7 +21,7 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
   useEffect(() => {
     const init = async () => {
       try{
-        let res = await fetch("https://farmfi-node.onrender.com/auth/keypair", {
+        const res = await fetch("https://farmfi-node.onrender.com/auth/keypair", {
           method: "POST",
           headers: {
             "Content-Type":"application/json"

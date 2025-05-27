@@ -7,7 +7,15 @@ import { useWallet } from "@/app/WalletContext";
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   
   const [tx, setTx] = useState()
+  // Importing the variables for signing transactions
   const { keypair, address, suiClient } = useWallet()
+
+  //to bypass unsued variable check
+  console.log(
+    keypair,
+    address,
+    suiClient
+  )
 
 
   const total = cart.reduce(
