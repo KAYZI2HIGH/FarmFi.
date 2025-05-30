@@ -61,7 +61,11 @@ export async function removeRoleCookie() {
   (await cookies()).delete("user_role");
 }
 
-export async function getAllProduce() {
-  const response = await fetch("https://farmfi-node.onrender.com/product/all");
+export async function getAllProduce(): Promise<Crop[]> {
+  const response = await fetch("https://farmfi-node.onrender.com/product/all", {
+    next: {
+      revalidate: 1800
+    }
+  });
   return response.json();
 }

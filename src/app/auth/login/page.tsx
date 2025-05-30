@@ -28,26 +28,26 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  const router = useRouter()
-  const { login, isAuthenticated } = useAuth()
-  const { toast } = useToast()
-  if (isAuthenticated) {
-    router.push("/account/marketplace");
-  }
-  
+  const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: ''
+      email: "",
+      password: "",
     },
   });
 
   const {
     formState: { isSubmitting },
   } = form;
+  
+  if (isAuthenticated) {
+    return router.push("/account/marketplace");
+  }
 
-  const Submit = async(values: z.infer<typeof formSchema>) => {
+  const Submit = async (values: z.infer<typeof formSchema>) => {
     const { email, password } = values;
     try {
       const response = await fetch(
@@ -59,7 +59,7 @@ export default function Login() {
           },
           body: JSON.stringify({
             email,
-            password
+            password,
           }),
         }
       );
@@ -76,7 +76,8 @@ export default function Login() {
         duration: 3000,
       });
       router.push("/account/marketplace");
-    } catch (err) {
+      // eslint-disable-next-line
+    } catch (_err) {
       toast({
         message: "Something went wrong, please try again later!",
         duration: 3000,

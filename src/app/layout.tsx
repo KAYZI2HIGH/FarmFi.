@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/components/custom-ui/toast";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { WalletProvider } from "@/context/WalletContext";
 
 export const metadata: Metadata = {
   title: "FarmFi - Farm-to-Table Marketplace",
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className={`antialiased ${poppins.className}`}>
         <QueryProvider>
           <AuthProvider>
-            <ToastProvider> {children}</ToastProvider>
+            <WalletProvider>
+              <ToastProvider> {children}</ToastProvider>
+            </WalletProvider>
           </AuthProvider>
           <Toaster position="top-center" />
         </QueryProvider>

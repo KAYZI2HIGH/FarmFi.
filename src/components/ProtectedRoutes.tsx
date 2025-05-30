@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/app/loading";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -7,23 +8,29 @@ import { useEffect } from "react";
 export default function ProtectedRoute({
   children,
   requiredRole,
-  redirectForUnauthorizedRole,
+  redirectForUnauthorizedRole = "/",
 }: {
   children: React.ReactNode;
   requiredRole?: string;
   redirectForUnauthorizedRole?: string;
 }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
-  const pathName = usePathname()
+  const pathName = usePathname();
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push(`/auth/login?redirect=${encodeURIComponent(pathName)}`);
     } else if (requiredRole && user?.role !== requiredRole) {
-      router.push(redirectForUnauthorizedRole || "/");
+      router.push(redirectForUnauthorizedRole);
     }
-  }, [isAuthenticated, requiredRole, user?.role, router, pathName]);
+  }, [isAuthenticated, isLoading, requiredRole, user?.role, router, pathName]);
+
+  if (isLoading) {
+    return <Loading/>
+  }
 
   return isAuthenticated ? <>{children}</> : null;
 }

@@ -18,6 +18,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   helperText,
   name,
+  // eslint-disable-next-line
   fullWidth = false,
   placeHolderClassName,
   value,

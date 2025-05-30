@@ -8,7 +8,7 @@ import { Copy } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-const page = () => {
+const ProfilePage = () => {
   const walletAddress = shortenText("0xe064ed7339bea4ubfq34erf0dx9482ef", {
     maxLength: 14,
   });
@@ -24,7 +24,9 @@ const page = () => {
           <div className="flex justify-between gap-5">
             <div className="flex gap-2 items-center justify-center">
               <ProfileAvatar
-                image={user?.imgUrl!}
+              // eslint-disable-next-line
+              image={user?.imgUrl!}
+              // eslint-disable-next-line
                 name={user?.name!}
                 className="size-[60px]"
               />
@@ -117,4 +119,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default ProfilePage;

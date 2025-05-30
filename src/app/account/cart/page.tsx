@@ -14,8 +14,6 @@ import Image from "next/image";
 
 import React, { Fragment } from "react";
 
-
-
 const page = async () => {
   const cart = await getCart();
 
@@ -49,15 +47,23 @@ const page = async () => {
                     <TableRow>
                       <TableCell className="font-medium relative aspect-square">
                         <Image
-                          src={item.image}
+                          src={
+                             Array.isArray(item.imgUrl)
+                                ? item.imgUrl[0]
+                                : item.imgUrl
+                          }
                           alt={item.name}
                           fill
                           className="object-cover rounded-md"
                         />
                       </TableCell>
                       <TableCell className="text-center">{item.name}</TableCell>
-                      <TableCell className="text-center">{item.weight}</TableCell>
-                      <TableCell className="text-center">{item.price}</TableCell>
+                      <TableCell className="text-center">
+                        {item.weight}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.price}
+                      </TableCell>
                     </TableRow>
                   </TableBody>
                 </Fragment>

@@ -2,7 +2,7 @@
 
 import { poppins } from "@/lib/fonts";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { getRoleCookie } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { FarmersRegisterFormInputs } from "@/lib/constants";
@@ -129,7 +129,8 @@ export default function FarmerRegister() {
         duration: 3000,
       });
       router.push("/account/produce");
-    } catch (err) {
+      // eslint-disable-next-line
+    } catch (_err) {
       toast({
         message: "Something went wrong, please try again later!",
         duration: 3000,

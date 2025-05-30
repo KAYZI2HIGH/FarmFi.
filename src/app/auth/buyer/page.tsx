@@ -110,7 +110,8 @@ export default function BuyerRegister() {
         duration: 3000,
       });
       router.push("/account/marketplace");
-    } catch (err) {
+      // eslint-disable-next-line
+    } catch (_err) {
       toast({
         message: "Something went wrong, please try again later!",
         duration: 3000,

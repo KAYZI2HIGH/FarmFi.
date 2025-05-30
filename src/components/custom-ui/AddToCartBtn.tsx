@@ -3,14 +3,20 @@ import { Button } from '../ui/button';
 import { useTransition } from 'react';
 import { addToCart } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
+import { useToast } from './toast';
 
 const AddToCartBtn = ({ produce }: { produce: Crop }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const {toast} = useToast()
 
   const handleAddToCart = () => {
     startTransition(async () => {
       await addToCart(produce);
+      toast({
+        message: `${produce.name} has been added to your cart`,
+        duration: 3000
+      })
       router.refresh();
     });
   };

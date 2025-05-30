@@ -1,17 +1,20 @@
-import Loading from "@/app/loading";
+import ProduceContainer from "@/components/custom-ui/ContainerSkeleton";
+import ProduceGridListingSkeleton from "@/components/custom-ui/ProduceGridListingSkeleton";
 import SearchInput from "@/components/custom-ui/SearchInput";
-import ProduceListingGrid from "@/components/ProduceListingGrid";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllProduce } from "@/lib/actions";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 
-const page = async ({ searchParams }: { searchParams: Promise<{ query: string }> }) => {
-  const { query } = await searchParams
-  const crops = await getAllProduce()
+const page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ query: string }>;
+}) => {
+  const { query } = await searchParams;
+
   return (
     <section className="space-y-[40px]  w-full px-5 lg:px-[60px]">
       <div className="flex justify-center items-center relative">
@@ -53,25 +56,28 @@ const page = async ({ searchParams }: { searchParams: Promise<{ query: string }>
           <TabsTrigger value="other">Other Crops</TabsTrigger>
         </TabsList>
         <TabsContent value="staple">
-          <ProduceListingGrid
-            query={query}
-            crops={crops}
-            filter="staple"
-          />
+          <Suspense fallback={<ProduceGridListingSkeleton />}>
+            <ProduceContainer
+              filter="staple"
+              query={query}
+            />
+          </Suspense>
         </TabsContent>
         <TabsContent value="cash">
-          <ProduceListingGrid
-            query={query}
-            crops={crops}
-            filter="cash"
-          />
+          <Suspense fallback={<ProduceGridListingSkeleton />}>
+            <ProduceContainer
+              filter="cash"
+              query={query}
+            />
+          </Suspense>
         </TabsContent>
         <TabsContent value="other">
-          <ProduceListingGrid
-            query={query}
-            crops={crops}
-            filter="other"
-          />
+          <Suspense fallback={<ProduceGridListingSkeleton />}>
+            <ProduceContainer
+              filter="other"
+              query={query}
+            />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </section>
