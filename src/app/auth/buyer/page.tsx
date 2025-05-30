@@ -1,7 +1,16 @@
 "use client";
 
+import { useToast } from "@/components/custom-ui/toast";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { getRoleCookie } from "@/lib/actions";
@@ -16,85 +25,100 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export default function BuyerRegister() {
-  const router = useRouter()
-  const {login} = useAuth()
-   const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        dateOfBirth: "",
-        address: "",
-        nationalIdentityNumber: "",
-        state: "",
-        createPassword: "",
-        reEnterPassword: "",
-      },
-    });
-  
-    const {
-      formState: { isSubmitting },
-    } = form;
-  
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-      const {
-        firstName,
-        lastName,
-        email,
-        phone,
-        dateOfBirth,
-        address,
-        nationalIdentityNumber,
-        state,
-        createPassword,
-        reEnterPassword,
-      } = values;
-      try {
-        const response = await fetch(
-          "https://farmfi-node.onrender.com/auth/register",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              firstName,
-              lastName,
-              email,
-              phone,
-              dateOfBirth,
-              address,
-              nationalIdentityNumber,
-              state,
-              createPassword,
-              reEnterPassword,
-            }),
-          }
-        );
-  
-        const data = await response.json();
-  
-        if (!response.ok) {
-          throw new Error(data.message || "Login failed");
-        }
-  
-        login(data.token);
-        router.push("/dashboard");
-      } catch (err) {
-        throw new Error("Login failed");
-      }
-    }
+  const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const [role, setRole] = useState<string | undefined>();
- 
-   useEffect(() => {
-     const fetchRole = async () => {
-       const user_role = await getRoleCookie();
-       setRole(user_role);
-     };
-     fetchRole();
-   });
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const user_role = await getRoleCookie();
+      setRole(user_role);
+    };
+    fetchRole();
+  });
+
+  if (isAuthenticated) {
+    router.push("/account/marketplace");
+  }
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      dateOfBirth: "",
+      address: "",
+      nationalIdentityNumber: "",
+      state: "",
+      createPassword: "",
+      reEnterPassword: "",
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      // dateOfBirth,
+      address,
+      nationalIdentityNumber,
+      state,
+      createPassword,
+      // reEnterPassword,
+    } = values;
+    try {
+      const response = await fetch(
+        "https://farmfi-node.onrender.com/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            phoneNumber: phone,
+            role,
+            // dateOfBirth,
+            address,
+            nin: nationalIdentityNumber,
+            state,
+            password: createPassword,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      login(data.token);
+      toast({
+        message: "Account created successfully!",
+        duration: 3000,
+      });
+      router.push("/account/marketplace");
+    } catch (err) {
+      toast({
+        message: "Something went wrong, please try again later!",
+        duration: 3000,
+      });
+      throw new Error("Registration failed");
+    }
+  }
+
   return (
     <div className="wrapper space-y-10">
       <h1 className="text-[22px] font-medium text-center">
@@ -110,39 +134,39 @@ export default function BuyerRegister() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid md:grid-cols-2 gap-8 w-full h-full pb-10">
               {BuyersRegisterFormInputs.map((input, idx) => {
-                  return (
-                    <FormField
-                      key={idx}
-                      control={form.control}
-                      name={input.name}
-                      render={({ field }) => (
-                        <FormItem className="w-full md:max-w-[300px] max-sm:col-span-2">
-                          <FormLabel className="flex gap-2 text-[15px] font-medium text-[var(--charcoal-black)] mb-[10px]">
-                            {input.title}
-                            {input.required && (
-                              <span className="text-red-500">*</span>
-                            )}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              aria-label={input.title}
-                              aria-describedby={`${input.name}-description`}
-                              className="border-black border-0 border-b-[1.5] shadow-none outline-none bg-transparent focus-visible:outline-none focus-visible:ring-0   rounded-none text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide px-0"
-                              type={input.title === "Price" ? "number" : "text"}
-                              placeholder={input.placeholder}
-                              {...field}
-                            />
-                          </FormControl>
-                          {input.description && (
-                            <FormDescription className="text-[12px] font-light italic text-black">
-                              {input.description}
-                            </FormDescription>
+                return (
+                  <FormField
+                    key={idx}
+                    control={form.control}
+                    name={input.name}
+                    render={({ field }) => (
+                      <FormItem className="w-full md:max-w-[300px] max-sm:col-span-2">
+                        <FormLabel className="flex gap-2 text-[15px] font-medium text-[var(--charcoal-black)] mb-[10px]">
+                          {input.title}
+                          {input.required && (
+                            <span className="text-red-500">*</span>
                           )}
-                          <FormMessage id={`${input.name}-error`} />
-                        </FormItem>
-                      )}
-                    />
-                  );
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            aria-label={input.title}
+                            aria-describedby={`${input.name}-description`}
+                            className="border-black border-0 border-b-[1.5] shadow-none outline-none bg-transparent focus-visible:outline-none focus-visible:ring-0   rounded-none text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide px-0"
+                            type={input.title === "Price" ? "number" : "text"}
+                            placeholder={input.placeholder}
+                            {...field}
+                          />
+                        </FormControl>
+                        {input.description && (
+                          <FormDescription className="text-[12px] font-light italic text-black">
+                            {input.description}
+                          </FormDescription>
+                        )}
+                        <FormMessage id={`${input.name}-error`} />
+                      </FormItem>
+                    )}
+                  />
+                );
               })}
             </div>
             <div className="flex flex-col md:flex-row justify-center gap-10 w-full col-span-2">

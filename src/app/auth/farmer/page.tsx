@@ -23,13 +23,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/components/custom-ui/toast";
 
 export default function FarmerRegister() {
   const router = useRouter();
-
+  const { login, isAuthenticated } = useAuth();
+  const { toast } = useToast()
   const [role, setRole] = useState<string | undefined>();
 
-  const { login } = useAuth();
+    if (isAuthenticated) {
+      router.push('/account/marketplace')
+    }
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -72,12 +76,12 @@ export default function FarmerRegister() {
       lastName,
       email,
       phone,
-      dateOfBirth,
+      // dateOfBirth,
       address,
       nationalIdentityNumber,
       state,
       createPassword,
-      reEnterPassword,
+      // reEnterPassword,
       type,
       size,
       produceGrown,
@@ -95,17 +99,20 @@ export default function FarmerRegister() {
             firstName,
             lastName,
             email,
-            phone,
-            dateOfBirth,
+            phoneNumber: phone,
+            // dateOfBirth,
+            role,
             address,
-            nationalIdentityNumber,
+            nin: nationalIdentityNumber,
             state,
-            createPassword,
-            reEnterPassword,
-            type,
-            size,
-            produceGrown,
-            farmAddress,
+            password: createPassword,
+            // reEnterPassword,
+            farm: {
+              type,
+              size,
+              produceGrown,
+              address: farmAddress,
+            },
           }),
         }
       );
@@ -117,8 +124,16 @@ export default function FarmerRegister() {
       }
 
       login(data.token);
-      router.push("/dashboard");
+      toast({
+        message: "Account created successfully!",
+        duration: 3000,
+      });
+      router.push("/account/produce");
     } catch (err) {
+      toast({
+        message: "Something went wrong, please try again later!",
+        duration: 3000,
+      });
       throw new Error("Login failed");
     }
   }
@@ -195,9 +210,15 @@ export default function FarmerRegister() {
                               aria-label={input.title}
                               aria-describedby={`${input.name}-description`}
                               className="border-black border-0 border-b-[1.5] shadow-none outline-none bg-transparent focus-visible:outline-none focus-visible:ring-0   rounded-none text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide px-0"
-                              type={input.title === "Price" ? "number" : "text"}
+                              type={input.title === "Size" ? "number" : "text"}
                               placeholder={input.placeholder}
                               {...field}
+                              onChange={
+                                input.title === "Size"
+                                  ? (e) =>
+                                      field.onChange(e.target.valueAsNumber)
+                                  : field.onChange
+                              }
                             />
                           </FormControl>
                           {input.description && (

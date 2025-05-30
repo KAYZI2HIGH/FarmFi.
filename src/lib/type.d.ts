@@ -23,7 +23,7 @@ interface farmer {
 
 interface Crop {
   _id: string;
-  imgUrl: string;
+  imgUrl: string[];
   name: string;
   price: number;
   weight: number;

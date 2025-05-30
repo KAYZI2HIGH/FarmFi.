@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/AuthContext";
 import { getRoleCookie } from "@/lib/actions";
 import { buyerSidebarLinks, farmerSidebarLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ import { useEffect, useState } from "react";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const router = useRouter()
+  const {logout} = useAuth()
   const [role, setRole] = useState<string | undefined>();
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenuButton
           onClick={() => {
-            router.push('/auth')
+           logout()
           }}
           className={
             "py-5 hover:bg-white/40 transition-all duration-200 ease-in-out flex justify-center hover:text-white cursor-pointer"

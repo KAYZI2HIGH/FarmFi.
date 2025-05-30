@@ -1,6 +1,8 @@
+'use client'
 import ProfileAvatar from "@/components/custom-ui/ProfileAvater";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/AuthContext";
 import { shortenText } from "@/utils/shortenText";
 import { Copy } from "lucide-react";
 import Image from "next/image";
@@ -10,6 +12,7 @@ const page = () => {
   const walletAddress = shortenText("0xe064ed7339bea4ubfq34erf0dx9482ef", {
     maxLength: 14,
   });
+  const {user} = useAuth()
   return (
     <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
       <div className="flex justify-center items-center relative">
@@ -21,14 +24,14 @@ const page = () => {
           <div className="flex justify-between gap-5">
             <div className="flex gap-2 items-center justify-center">
               <ProfileAvatar
-                image="/assets/avatar/david.png"
-                name="Olayinka Ayodele"
+                image={user?.imgUrl!}
+                name={user?.name!}
                 className="size-[60px]"
               />
               <div className="space-y-[10px]">
-                <h1 className="text-[13px] font-semibold">Olayinka Ayodele</h1>
+                <h1 className="text-[13px] font-semibold">{user?.name}</h1>
                 <p className="text-[11px] font-medium tracking-wide">
-                  olayinkacodes@gmail.com
+                  {user?.email}
                 </p>
               </div>
             </div>
@@ -62,32 +65,32 @@ const page = () => {
               />
               <h1 className="text-[18px] font-medium">500 USDC</h1>
             </div>
-          <div className="flex gap-[80px] mt-5">
-            <Button
-              variant={"ghost"}
-              className="text-[13px] font-semibold hover:bg-white/60 cursor-pointer"
-            >
-              Deposit{" "}
-              <Image
-                src={"/icons/download_icon.svg"}
-                height={15}
-                width={14}
-                alt="download icon"
-              />
-            </Button>
-            <Button
-              variant={"ghost"}
-              className="text-[13px] font-semibold flex items-center justify-center hover:bg-white/60 cursor-pointer"
-            >
-              Withdraw{" "}
-              <Image
-                src={"/icons/withdraw.svg"}
-                height={22}
-                width={22}
-                alt="withdraw icon"
-              />
-            </Button>
-          </div>
+            <div className="flex gap-[80px] mt-5">
+              <Button
+                variant={"ghost"}
+                className="text-[13px] font-semibold hover:bg-white/60 cursor-pointer"
+              >
+                Deposit{" "}
+                <Image
+                  src={"/icons/download_icon.svg"}
+                  height={15}
+                  width={14}
+                  alt="download icon"
+                />
+              </Button>
+              <Button
+                variant={"ghost"}
+                className="text-[13px] font-semibold flex items-center justify-center hover:bg-white/60 cursor-pointer"
+              >
+                Withdraw{" "}
+                <Image
+                  src={"/icons/withdraw.svg"}
+                  height={22}
+                  width={22}
+                  alt="withdraw icon"
+                />
+              </Button>
+            </div>
           </div>
         </div>
         <div className="max-w-[400px] w-full">
@@ -96,28 +99,16 @@ const page = () => {
           </h1>
           <div className="mt-5 space-y-3">
             <div className="w-full flex justify-between items-center">
-              <p className="text-[12px] font-semibold">
-                Transaction ID: 12345
-              </p>
-              <p className="text-[12px] font-semibold">
-                13 USDC
-              </p>
+              <p className="text-[12px] font-semibold">Transaction ID: 12345</p>
+              <p className="text-[12px] font-semibold">13 USDC</p>
             </div>
             <div className="w-full flex justify-between items-center">
-              <p className="text-[12px] font-semibold">
-                Transaction ID: 12345
-              </p>
-              <p className="text-[12px] font-semibold">
-                13 USDC
-              </p>
+              <p className="text-[12px] font-semibold">Transaction ID: 12345</p>
+              <p className="text-[12px] font-semibold">13 USDC</p>
             </div>
             <div className="w-full flex justify-between items-center">
-              <p className="text-[12px] font-semibold">
-                Transaction ID: 12345
-              </p>
-              <p className="text-[12px] font-semibold">
-                13 USDC
-              </p>
+              <p className="text-[12px] font-semibold">Transaction ID: 12345</p>
+              <p className="text-[12px] font-semibold">13 USDC</p>
             </div>
           </div>
         </div>

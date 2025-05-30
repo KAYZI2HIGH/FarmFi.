@@ -1,12 +1,32 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
+interface JWT {
+  user: User;
+  exp: number;
+}
+
+interface Farm {}
+interface Location {
+  home: string;
+  state: string;
+}
+
 interface User {
-  id: string;
+  _v: number;
+  _id: string;
+  name: string;
   email: string;
+  imgUrl: string;
+  kycVerified: string;
+  NIN: string;
+  farm: Farm;
+  location: Location;
+  role?: string;
+  suiWallteAddress: string;
 }
 
 interface AuthContextType {
@@ -25,8 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = Cookies.get("authToken");
     if (token) {
       try {
-        const decoded = jwtDecode<User>(token);
-        setUser(decoded);
+        const decoded = jwtDecode<JWT>(token);
+        console.log(decoded);
+        setUser(decoded.user);
       } catch (error) {
         console.error("Invalid token", error);
         logout();
@@ -36,8 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (token: string) => {
     Cookies.set("authToken", token, { expires: 5 });
-    const decoded = jwtDecode<User>(token);
-    setUser(decoded);
+    const decoded = jwtDecode<JWT>(token);
+    setUser(decoded.user);
   };
 
   const logout = () => {

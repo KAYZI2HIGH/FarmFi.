@@ -25,8 +25,7 @@ import { saveListing } from "@/utils/storage";
 import { useRouter } from "next/navigation";
 
 export function NewListingForm() {
-
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,7 +42,9 @@ export function NewListingForm() {
     },
   });
 
-  const {formState: {isSubmitting}} = form
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     saveListing(values)
@@ -55,7 +56,7 @@ export function NewListingForm() {
       })
       .catch((error) => {
         toast.error("Failed to save");
-        console.log(error)
+        console.log(error);
       });
   }
 
@@ -80,11 +81,11 @@ export function NewListingForm() {
                     aria-label={input.title}
                     aria-describedby={`${input.name}-description`}
                     className="border-black border-0 border-b-[1.5] shadow-none outline-none bg-transparent focus-visible:outline-none focus-visible:ring-0   rounded-none text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide px-0"
-                    type={input.title === 'Price' ? 'number' : "text"}
+                    type={input.title === "Price" ? "number" : "text"}
                     placeholder={input.placeholder}
                     {...field}
                     onChange={
-                      input.title === 'Price'
+                      input.title === "Price"
                         ? (e) => field.onChange(e.target.valueAsNumber)
                         : field.onChange
                     }

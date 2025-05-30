@@ -45,7 +45,7 @@ const ProduceCard = ({ crop }: { crop: Crop }) => {
           }}
         >
           <Image
-            src={crop.imgUrl}
+            src={crop.imgUrl[0]}
             fill
             alt={crop.name}
             className="object-cover transition-transform duration-700 group-hover:scale-105"
