@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { links } from "@/lib/constants";
+import { buyerSidebarLinks, farmerSidebarLinks, links } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -9,10 +9,22 @@ import {
   linkVariants,
   mobileMenuVariants,
 } from "@/lib/animation-variants/NavbarVariants";
+import { useAuth } from "@/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import ProfileAvatar from "./custom-ui/ProfileAvater";
+import LogoutBtn from "./custom-ui/LogoutBtn";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +33,8 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const items = user?.role === "buyer" ? buyerSidebarLinks : farmerSidebarLinks;
 
   return (
     <motion.div
@@ -78,51 +92,97 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        <button
-          className="md:hidden focus:outline-none z-50"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          <motion.div
-            animate={isOpen ? "open" : "closed"}
-            className="flex flex-col gap-[6px]"
+        {!isAuthenticated && (
+          <button
+            className="md:hidden focus:outline-none z-50"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
           >
-            <motion.span
-              className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
-              variants={{
-                closed: { rotate: 0, y: 0 },
-                open: { rotate: 45, y: 8 },
-              }}
-            />
-            <motion.span
-              className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
-              variants={{
-                closed: { opacity: 1 },
-                open: { opacity: 0 },
-              }}
-            />
-            <motion.span
-              className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
-              variants={{
-                closed: { rotate: 0, y: 0 },
-                open: { rotate: -45, y: -8 },
-              }}
-            />
-          </motion.div>
-        </button>
+            <motion.div
+              animate={isOpen ? "open" : "closed"}
+              className="flex flex-col gap-[6px]"
+            >
+              <motion.span
+                className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: 45, y: 8 },
+                }}
+              />
+              <motion.span
+                className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
+                variants={{
+                  closed: { opacity: 1 },
+                  open: { opacity: 0 },
+                }}
+              />
+              <motion.span
+                className="w-6 h-[2px] bg-[var(--chestnut-brown)] block"
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: -45, y: -8 },
+                }}
+              />
+            </motion.div>
+          </button>
+        )}
 
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="hidden md:block"
-        >
-          <Button
-            className="call_to_action_btn_text bg-[var(--chestnut-brown)] hover:bg-[var(--chestnut-brown)]/90 px-5 rounded-full transition-all duration-300 hover:shadow-lg"
-            asChild
+        {isAuthenticated && user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <ProfileAvatar
+                image={user.imgUrl}
+                name={user.name}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56 bg-[#E1C699] mt-8 BORDER-"
+              align="end"
+              forceMount
+            >
+              <DropdownMenuLabel className="mb-0 pb-0 font-bold tracking-wide">
+                {user?.name?.split(" ")[0]}
+              </DropdownMenuLabel>
+              <DropdownMenuLabel className="text-[12px] opacity-60">
+                {user?.email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-black/10" />
+              {items.map((item, index) => (
+                <DropdownMenuItem
+                  key={index}
+                  asChild
+                >
+                  <Link
+                    href={item.url}
+                    className="flex gap-3 items-center"
+                  >
+                    {item.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem asChild>
+                <LogoutBtn className="w-full h-ful items-center justify-start text-red-500 hover:bg-red-100 hover:text-red-500" />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-black/10" />
+              <div className="w-full flex items-center justify-center  text-sm opacity-60">
+                FarmFi &copy; 2025
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hidden md:block"
           >
-            <Link href={"/auth/login"}>Log in</Link>
-          </Button>
-        </motion.div>
+            <Button
+              className="call_to_action_btn_text bg-[var(--chestnut-brown)] hover:bg-[var(--chestnut-brown)]/90 px-5 rounded-full transition-all duration-300 hover:shadow-lg"
+              asChild
+            >
+              <Link href={"/auth/login"}>Log in</Link>
+            </Button>
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>

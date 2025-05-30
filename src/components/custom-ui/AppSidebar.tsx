@@ -10,29 +10,18 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { getRoleCookie } from "@/lib/actions";
 import { buyerSidebarLinks, farmerSidebarLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const {logout} = useAuth()
-  const [role, setRole] = useState<string | undefined>();
+  const {user,logout} = useAuth()
 
-  useEffect(() => {
-    const fetchRole = async () => {
-      const user_role = await getRoleCookie();
-      setRole(user_role);
-    };
-    fetchRole();
-  });
-
-  const items = role === "buyer" ? buyerSidebarLinks : farmerSidebarLinks;
+  const items = user?.role === "buyer" ? buyerSidebarLinks : farmerSidebarLinks;
 
   return (
     <Sidebar className="text-[#F4F4F4] font-semibold text-[15px] tracking-wide">
