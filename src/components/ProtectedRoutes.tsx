@@ -26,7 +26,7 @@ export default function ProtectedRoute({
     } else if (requiredRole && user?.role !== requiredRole) {
       router.push(redirectForUnauthorizedRole);
     }
-  }, [isAuthenticated, isLoading, requiredRole, user?.role, router, pathName]);
+  }, [isAuthenticated, isLoading, requiredRole, user?.role, router, pathName, redirectForUnauthorizedRole]);
 
   if (isLoading) {
     return <Loading/>

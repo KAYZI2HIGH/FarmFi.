@@ -24,7 +24,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -141,7 +140,6 @@ function ProfileForm({
     formState: { isSubmitting },
   } = form;
 
-  // eslint-disable-next-line
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
     await handleOrder(value.pin)
     setOpen(false)
