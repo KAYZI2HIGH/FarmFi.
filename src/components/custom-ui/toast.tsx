@@ -41,7 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ type: "easeInOut", duration: 1 }}
-            className="fixed top-0 left-1/2 transform -translate-x-1/2 w-[490px] z-[100]"
+            className="fixed top-0 left-1/2 transform -translate-x-1/2 w-[490px] z-[10000]"
           >
             <div className="flex items-center justify-center gap-[10px] p-[10px] rounded-b-[10px] border border-[rgba(33,33,33,0.6)] bg-[#FBC02D] text-[#212121] font-poppins text-[13px] font-semibold leading-none">
               <span>{toastConfig.message}</span>

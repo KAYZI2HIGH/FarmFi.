@@ -2,8 +2,11 @@
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { useWallet } from "@/context/WalletContext";
+import { PayNowBtn } from "@/components/custom-ui/PayNowBtn";
+import { useToast } from "@/components/custom-ui/toast";
 
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
+  const { toast } = useToast();
   const [tx, setTx] = useState();
   // Importing the variables for signing transactions
   const { keypair, address, suiClient } = useWallet();
@@ -25,31 +28,46 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
       "0xcaec2af7f3d0d2227e4b2b0efa47d3f99ccf696f8368a1e577b42fe0a3549f6f",
   };
 
-  const handleOrder = async () => {
+  const handleOrder = async (password: string) => {
     console.log("sending");
 
-    const orderres = await fetch(
-      "https://farmfi-node.onrender.com/order/create",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          buyer: "test1234@gmail.com",
-          product,
-          password: "test1234",
-        }),
-      }
-    );
+    try {
+      const orderres = await fetch(
+        "https://farmfi-node.onrender.com/order/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            buyer: "test1234@gmail.com",
+            product,
+            password,
+          }),
+        }
+      );
 
-    const orderdata = await orderres.json();
-    setTx(orderdata.serializedTransaction);
-    console.log(tx);
-    const digest = orderdata.serializedTransaction.digest;
-    console.log(digest);
-    alert(digest);
-    // signSuiTransaction()
+      const orderdata = await orderres.json();
+      setTx(orderdata.serializedTransaction);
+      console.log(tx);
+      const digest = orderdata.serializedTransaction.digest;
+      console.log(digest);
+      alert(digest);
+      if (!orderres.ok) {
+        toast({
+          message: "Something went wrong, please try again later.",
+          duration: 3000,
+        });
+        throw new Error("Something went wrong");
+      }
+      // signSuiTransaction()
+    } catch (err) {
+      toast({
+        message: "Payment failed. Please try again later",
+        duration: 3000,
+      });
+      throw new Error(`Payment failed: ${err}`);
+    }
   };
 
   return (
@@ -101,13 +119,7 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         <h1 className="text-[15px] font-semibold">Total</h1>
         <h1 className="text-[15px] font-semibold">{total + 6} USDC</h1>
       </div>
-      <Button
-        className="group bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90 rounded-full px-6 py-4 call_to_action_btn_text w-full"
-        asChild
-        onClick={handleOrder}
-      >
-        Pay now
-      </Button>
+      <PayNowBtn handleOrder={handleOrder} />
     </div>
   );
 };
