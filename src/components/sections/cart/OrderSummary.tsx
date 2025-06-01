@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useWallet } from "@/context/WalletContext";
 import { PayNowBtn } from "@/components/custom-ui/PayNowBtn";
 import { useToast } from "@/components/custom-ui/toast";
+import { clearCart } from "@/lib/actions";
 
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   const { toast } = useToast();
@@ -61,6 +62,9 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         throw new Error("Something went wrong");
       }
       // signSuiTransaction()
+
+      // reset cookie
+      await clearCart()
     } catch (err) {
       toast({
         message: "Payment failed. Please try again later",

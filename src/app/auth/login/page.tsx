@@ -94,7 +94,7 @@ export default function Login() {
         </h2>
         <Form {...form}>
           <form
-            className="flex flex-col items-center space-y-10 w-[462px]"
+            className="flex flex-col items-center space-y-10 w-full"
             onSubmit={form.handleSubmit(Submit)}
           >
             <FormField
