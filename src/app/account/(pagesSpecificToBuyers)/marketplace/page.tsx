@@ -1,12 +1,11 @@
 import ProduceContainer from "@/components/custom-ui/ContainerSkeleton";
-import ProduceGridListingSkeleton from "@/components/custom-ui/ProduceGridListingSkeleton";
 import SearchInput from "@/components/custom-ui/SearchInput";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Suspense } from "react";
+import React from "react";
 
 const page = async ({
   searchParams,
@@ -56,28 +55,22 @@ const page = async ({
           <TabsTrigger value="other">Other Crops</TabsTrigger>
         </TabsList>
         <TabsContent value="staple">
-          <Suspense fallback={<ProduceGridListingSkeleton />}>
-            <ProduceContainer
-              filter="staple"
-              query={query}
-            />
-          </Suspense>
+          <ProduceContainer
+            filter="staple"
+            query={query}
+          />
         </TabsContent>
         <TabsContent value="cash">
-          <Suspense fallback={<ProduceGridListingSkeleton />}>
-            <ProduceContainer
-              filter="cash"
-              query={query}
-            />
-          </Suspense>
+          <ProduceContainer
+            filter="cash"
+            query={query}
+          />
         </TabsContent>
         <TabsContent value="other">
-          <Suspense fallback={<ProduceGridListingSkeleton />}>
-            <ProduceContainer
-              filter="other"
-              query={query}
-            />
-          </Suspense>
+          <ProduceContainer
+            filter="other"
+            query={query}
+          />
         </TabsContent>
       </Tabs>
     </section>

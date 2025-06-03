@@ -231,7 +231,7 @@ export const buyerSidebarLinks = [
   {
     title: "Profile",
     url: "/account/profile",
-    icon: "/icons/user_fill.svg",
+    icon: "/icons/User_fill.svg",
   },
   {
     title: "Delivery Status",
@@ -241,7 +241,7 @@ export const buyerSidebarLinks = [
   {
     title: "Dispute",
     url: "/account/dispute",
-    icon: "/icons/info_fill.svg",
+    icon: "/icons/Info_fill.svg",
   },
 ];
 
@@ -295,6 +295,12 @@ export const FormInputs: FormInput[] = [
     title: "Type",
     placeholder: "what type of crop is it?",
     description: "i.e cash crop, staple crop or other.",
+  },
+  {
+    name: "description",
+    title: "Produce Description",
+    placeholder: "describe what your produce is.",
+    description: "bried description of your produce and it's benefits.",
   },
   {
     name: "quantity",
@@ -497,5 +503,41 @@ export const BuyersRegisterFormInputs: BuyersRegisterFormInput[] = [
     description: "re-enter your password",
     type: "password",
     required: true,
+  },
+];
+export const editFormInputs: EditFormInput[] = [
+  {
+    name: "name",
+    title: "Product Name",
+    placeholder: "e.g., Organic Golden Corn",
+    description: "Enter the official name of your product",
+  },
+  {
+    name: "description",
+    title: "Product Description",
+    placeholder: "Describe your product's features and qualities",
+    description:
+      "Detailed description helps customers understand your product better",
+  },
+  {
+    name: "price",
+    title: "Price",
+    placeholder: "0.00",
+    description: "Enter price in your local currency",
+    type: "number", // Adding type for better input handling
+  },
+  {
+    name: "category",
+    title: "Product Category",
+    placeholder: "Select a category",
+    description: "Choose the most relevant category for your product",
+    options: ["Vegetables", "Fruits", "Grains", "Dairy", "Meat"],
+  },
+  {
+    name: "weight",
+    title: "Weight/Quantity",
+    placeholder: "e.g., 1kg, 500g, or 12 pieces",
+    description: "Specify weight in kg/g or quantity in units/pieces",
+    unit: "kg",
   },
 ];

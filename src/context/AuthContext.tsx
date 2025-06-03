@@ -36,7 +36,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (token: string) => void;
+  login: (token: string) => User | null | undefined;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -99,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const decoded = jwtDecode<JWT>(token);
     setUser(decoded.user);
+    return user;
   };
 
   const logout = () => {

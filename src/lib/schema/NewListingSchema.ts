@@ -7,11 +7,14 @@ export const formSchema = z.object({
   type: z.string().min(2, {
     message: "Please enter either cash crop, staple crop or other.",
   }),
+  description: z.string().min(200, {
+    message: "Your description should exceed 200 characters.",
+  }),
   quantity: z.string().min(2, {
     message: "quantity must be at least 2 characters.",
   }),
   price: z.number().positive({
-    message: "Price must be positive"
+    message: "Price must be positive",
   }),
   harvestDate: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, {
     message: "Please use dd/mm/yyyy format",
@@ -26,7 +29,10 @@ export const formSchema = z.object({
     message: "Please your contact details.",
   }),
   produceImages: z
-    .array(z.instanceof(File))
-    .min(3, "At least 3 images required")
-    .max(5, "Maximum 5 images allowed"),
+    .any()
+    .refine((files) => files?.length > 0, "At least one image is required")
+    .refine(
+      (files) => files?.every((file: File) => file.size <= 10 * 1024 * 1024),
+      "Each file must be less than 10MB"
+    ),
 });

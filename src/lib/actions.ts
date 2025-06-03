@@ -61,10 +61,10 @@ export async function removeRoleCookie() {
   (await cookies()).delete("user_role");
 }
 
-export async function getAllProduce(): Promise<Crop[]> {
+export async function getAllProduce(revalidate = 360): Promise<Crop[]> {
   const response = await fetch("https://farmfi-node.onrender.com/product/all", {
     next: {
-      revalidate: 1800
+      revalidate
     }
   });
   return response.json();

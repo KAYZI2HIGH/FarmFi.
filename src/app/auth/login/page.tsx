@@ -29,7 +29,7 @@ const formSchema = z.object({
 
 export default function Login() {
   const router = useRouter();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,9 +42,11 @@ export default function Login() {
   const {
     formState: { isSubmitting },
   } = form;
-  
-  if (isAuthenticated) {
-    return router.push("/account/marketplace");
+
+  if (isAuthenticated && user) {
+    return user.role === "buyer"
+      ? router.push("/account/marketplace")
+      : router.push("/account/produce");
   }
 
   const Submit = async (values: z.infer<typeof formSchema>) => {
@@ -70,12 +72,15 @@ export default function Login() {
         throw new Error(data.message || "Login failed");
       }
 
-      login(data.token);
+      const userInfo = await login(data.token);
       toast({
         message: "Login successfully!",
         duration: 3000,
       });
-      router.push("/account/marketplace");
+      if (userInfo) {
+        return userInfo.role === 'buyer' ? router.push("/account/marketplace") : router.push("/account/produce")
+      }
+      
       // eslint-disable-next-line
     } catch (_err) {
       toast({
@@ -178,7 +183,7 @@ export default function Login() {
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                Submit
+                Sign in
               </Button>
               {/* <input
               type="submit"

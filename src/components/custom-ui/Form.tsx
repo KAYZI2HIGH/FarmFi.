@@ -20,20 +20,24 @@ import Link from "next/link";
 import { formSchema } from "@/lib/schema/NewListingSchema";
 import { FormInputs } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { saveListing } from "@/utils/storage";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "./toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function NewListingForm() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       produceName: "",
       type: "",
+      description: "",
       quantity: "",
-      price: null as unknown as number,
+      price: "" as unknown as number,
       harvestDate: "",
       expiryDate: "",
       farmerContact: "",
@@ -46,18 +50,57 @@ export function NewListingForm() {
     formState: { isSubmitting },
   } = form;
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    saveListing(values)
-      .then(() => {
-        toast.success("Saved successfully!", {
-          className: "bg-[#FBC02D] text-black",
+  const queryClient = useQueryClient();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const formData = new FormData();
+
+      formData.append("name", values.produceName);
+      formData.append("description", values.description);
+      formData.append("price", values.price.toString());
+      formData.append("stock", values.quantity);
+      formData.append("category", values.type);
+      //eslint-disable-next-line
+      formData.append("farmer", user?._id!);
+      formData.append("weight", values.quantity);
+      formData.append("image", values.produceImages[0]);
+      // values.produceImages.forEach((file: File) => {
+      //   formData.append("image", file);
+      // });
+
+      const response = await fetch(
+        "https://farmfi-node.onrender.com/product/create",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        toast({
+          message: "Failed to create listing",
+          duration: 3000,
         });
-        router.push("/account/produce/manage-listing");
-      })
-      .catch((error) => {
-        toast.error("Failed to save");
-        console.log(error);
+        throw new Error("Failed to create listing");
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      toast({
+        message: "Listing created successfully!",
+        duration: 3000,
       });
+      queryClient.invalidateQueries({ queryKey: ["produce"] });
+      router.push("/account/produce/manage-listing");
+    } catch (error) {
+      toast({
+        message: "Failed to create listing",
+        duration: 3000,
+      });
+      console.error("Error creating listing:", error);
+    }
   }
 
   return (

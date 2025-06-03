@@ -39,6 +39,7 @@ interface Crop {
 type FormFieldName =
   | "produceName"
   | "type"
+  | "description"
   | "quantity"
   | "price"
   | "harvestDate"
@@ -114,4 +115,22 @@ interface StoredListing {
     base64: string;
   }>;
   createdAt: string;
+}
+
+type EditFormName =
+  | "name"
+  | "category"
+  | "description"
+  | "weight"
+  | "price"
+  | "produceImages";
+
+interface EditFormInput {
+  name: EditFormName;
+  title: string;
+  placeholder: string,
+  description: string;
+  type?: string,
+  options?: string[];
+  unit?: string;
 }

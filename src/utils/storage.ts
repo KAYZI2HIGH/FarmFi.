@@ -15,7 +15,8 @@ export const saveListing = async (values: z.infer<typeof formSchema>) => {
   try {
 
     const images = await Promise.all(
-      values.produceImages.map(async (file) => ({
+      //eslint-disable-next-line
+      values.produceImages.map(async (file: any) => ({
         name: file.name,
         type: file.type,
         base64: await convertFileToBase64(file),

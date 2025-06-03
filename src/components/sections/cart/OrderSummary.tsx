@@ -2,9 +2,23 @@
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { useWallet } from "@/context/WalletContext";
-import { PayNowBtn } from "@/components/custom-ui/PayNowBtn";
+import { ResponsiveDialogBtn } from "@/components/custom-ui/ResponsiveDialogBtn";
 import { useToast } from "@/components/custom-ui/toast";
 import { clearCart } from "@/lib/actions";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+
+
+const formSchema = z.object({
+  pin: z
+    .string()
+    .min(6, { message: "Password cannot be less than 6 characters" }),
+});
 
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   const { toast } = useToast();
@@ -64,7 +78,7 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
       // signSuiTransaction()
 
       // reset cookie
-      await clearCart()
+      await clearCart();
     } catch (err) {
       toast({
         message: "Payment failed. Please try again later",
@@ -123,9 +137,95 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         <h1 className="text-[15px] font-semibold">Total</h1>
         <h1 className="text-[15px] font-semibold">{total + 6} USDC</h1>
       </div>
-      <PayNowBtn handleOrder={handleOrder} />
+      <ResponsiveDialogBtn
+        submitFn={handleOrder}
+        triggerBtn={
+          <Button
+            className="group bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90 rounded-full px-6 py-4 call_to_action_btn_text w-full cursor-pointer"
+            // onClick={submitFn}
+          >
+            Pay now
+          </Button>
+        }
+        CustomForm={CustomForm}
+        dialogDescription="Note: your account password is your transaction pin"
+        dialogTitle="Confirm Password"
+      />
     </div>
   );
 };
 
 export default OrderSummary;
+
+function CustomForm({
+  className,
+  submitFn,
+  setOpen,
+}: {
+  className?: string;
+  submitFn: (password: string) => Promise<void>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      pin: "",
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  const onSubmit = async (value: z.infer<typeof formSchema>) => {
+    await submitFn(value.pin);
+    setOpen(false);
+  };
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn("grid items-start gap-6 mt-3", className)}
+      >
+        <FormField
+          control={form.control}
+          name="pin"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-[15px] font-medium">
+                Transaction PIN
+              </FormLabel>
+              <FormControl>
+                <Input
+                  aria-label="PIN"
+                  aria-describedby={`PIN-description`}
+                  className="border-black  bg-transparent focus-visible:outline-none focus-visible:ring-0 text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide"
+                  type="password"
+                  placeholder="e.g Jackblack1#"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-[12px] font-light italic text-black">
+                input account password
+              </FormDescription>
+              <FormMessage id={`PIN-error`} />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="cursor-pointer bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90"
+        >
+          {isSubmitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            "Confirm"
+          )}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
