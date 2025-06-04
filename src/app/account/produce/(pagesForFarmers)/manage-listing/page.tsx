@@ -47,8 +47,7 @@ const editFormSchema = z.object({
   }),
   produceImages: z
     .any()
-    // .optional()
-    // .refine((files) => files?.length > 0, "At least one image is required")
+    .refine((files) => files?.length > 0, "At least one image is required")
     .refine(
       (files) => files?.every((file: File) => file.size <= 10 * 1024 * 1024),
       "Each file must be less than 10MB"
@@ -94,6 +93,7 @@ const ManageListingPage = () => {
       formData.append("category", category);
       formData.append("weight", weight.toString());
       formData.append("image", produceImages[0]);
+
       const response = await fetch(
         `https://farmfi-node.onrender.com/product/update/${id}`,
         {

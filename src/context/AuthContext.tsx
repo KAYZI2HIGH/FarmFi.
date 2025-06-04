@@ -20,11 +20,13 @@ interface Location {
   state: string;
 }
 
-interface User {
+export interface User {
   _v: number;
   _id: string;
   name: string;
   email: string;
+  nin?: string;
+  image: File;
   imgUrl: string;
   kycVerified: boolean;
   NIN: string;
@@ -36,7 +38,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (token: string) => User | null | undefined;
+  login: (token: string, userData?: User) => User | null | undefined;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, []);
 
-  const login = (token: string) => {
+  const login = (token: string, userData?: User) => {
     if (isTokenExpired(token)) {
       logout();
       return;
@@ -98,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const decoded = jwtDecode<JWT>(token);
-    setUser(decoded.user);
+    setUser(userData || decoded.user);
     return user;
   };
 

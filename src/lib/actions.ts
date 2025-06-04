@@ -1,5 +1,6 @@
 'use server'
 
+import { User } from "@/context/AuthContext";
 import { cookies } from "next/headers";
 
 export async function getCart(): Promise<Crop[]> {
@@ -61,7 +62,7 @@ export async function removeRoleCookie() {
   (await cookies()).delete("user_role");
 }
 
-export async function getAllProduce(revalidate = 360): Promise<Crop[]> {
+export async function getAllProduce(): Promise<Crop[]> {
   const response = await fetch("https://farmfi-node.onrender.com/product/all",
     // {
     // next: {
@@ -71,3 +72,26 @@ export async function getAllProduce(revalidate = 360): Promise<Crop[]> {
   );
   return response.json();
 }
+
+export const updateUserProfile = async (
+  userId: string,
+  updates: Partial<User>
+) => {
+  const response = await fetch(
+    `https://farmfi-node.onrender.com/auth/update/${userId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${Cookies.get("authToken")}`,
+      },
+      body: JSON.stringify(updates),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update profile");
+  }
+
+  return response.json();
+};
