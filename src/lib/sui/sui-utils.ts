@@ -18,6 +18,9 @@ export const getSplitCoin = async (wallet: string, amount:number) => {
     return ownedCoins[0]
 }
 
+
+// const USDC_CoinType = "" //Sui Coin Type
+
 export const getBalance = async (wallet: string) => {  //, type: string) => {
      const coins = await client.getCoins({
         owner: wallet,
