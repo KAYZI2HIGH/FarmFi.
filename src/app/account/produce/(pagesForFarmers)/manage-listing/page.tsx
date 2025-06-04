@@ -28,7 +28,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
+const editFormSchema = z.object({
   id: z.string(),
   name: z.string().min(2, {
     message: "Produce name must be at least 2 characters.",
@@ -52,15 +52,26 @@ const formSchema = z.object({
     .refine(
       (files) => files?.every((file: File) => file.size <= 10 * 1024 * 1024),
       "Each file must be less than 10MB"
-  ),
+    ),
 });
+
+const deleteFormSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    confirmDelete: z.string(),
+  })
+  .refine((data) => data.confirmDelete.toLowerCase() === "delete my produce", {
+    message: "The verification text is required",
+    path: ["confirmDelete"],
+  });
 
 const ManageListingPage = () => {
   const { toast } = useToast();
-  const {
-    data: rawListings,
-    isLoading,
-  } = useQuery({ queryKey: ["produce"], queryFn: () => getAllProduce() });
+  const { data: rawListings, isLoading } = useQuery({
+    queryKey: ["produce"],
+    queryFn: () => getAllProduce(),
+  });
 
   const { user } = useAuth();
 
@@ -68,12 +79,21 @@ const ManageListingPage = () => {
     (item) => user?._id === item.farmer?._id
   );
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const editHandleSubmit = async (values: z.infer<typeof editFormSchema>) => {
     const { id, name, price, category, description, weight, produceImages } =
       values;
     try {
+      const formData = new FormData();
+
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("price", price.toString());
+      formData.append("stock", weight.toString());
+      formData.append("category", category);
+      formData.append("weight", weight.toString());
+      formData.append("image", produceImages[0]);
       const response = await fetch(
         `https://farmfi-node.onrender.com/product/update/${id}`,
         {
@@ -81,14 +101,7 @@ const ManageListingPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name,
-            price,
-            category,
-            description,
-            weight,
-            produceImages,
-          }),
+          body: formData,
         }
       );
 
@@ -114,6 +127,43 @@ const ManageListingPage = () => {
     }
   };
 
+  const deleteHandleSubmit = async (values: z.infer<typeof deleteFormSchema>) => {
+    const { id, name } = values;
+    try {
+      const formData = new FormData()
+
+      formData.append("name", name)
+
+      const response = await fetch(
+        `https://farmfi-node.onrender.com/product/delete/${id}`,
+        {
+          method: "DELETE",
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "something went wrong");
+      }
+
+      toast({
+        message: "Produce deleted successfully.",
+        duration: 3000,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["produce"] });
+      // eslint-disable-next-line
+    } catch (_err) {
+      toast({
+        message: "Something went wrong, please try again later!",
+        duration: 3000,
+      });
+      throw new Error("delete failed");
+    }
+  }
+
   return (
     <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
       <div className="flex justify-center items-center relative">
@@ -126,19 +176,15 @@ const ManageListingPage = () => {
         <div className="border border-black rounded-[5px]">
           <div className="flex flex-col-reverse sm:flex-row justify-between p-[10px] border-b border-black gap-5">
             <Skeleton className="w-full h-[100px] bg-black/20" />
-           
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-between p-[10px] border-b border-black gap-5">
             <Skeleton className="w-full h-[100px] bg-black/20" />
-           
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-between p-[10px] border-b border-black gap-5">
             <Skeleton className="w-full h-[100px] bg-black/20" />
-           
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-between p-[10px] border-b border-black gap-5">
             <Skeleton className="w-full h-[100px] bg-black/20" />
-           
           </div>
         </div>
       ) : listings && listings!.length > 0 ? (
@@ -173,7 +219,7 @@ const ManageListingPage = () => {
                 </div>
                 <div className="flex gap-1">
                   <ResponsiveDialogBtn
-                    submitFn={handleSubmit}
+                    submitFn={editHandleSubmit}
                     triggerBtn={
                       <Button
                         variant={"ghost"}
@@ -187,13 +233,22 @@ const ManageListingPage = () => {
                     dialogTitle=" Edit Product"
                     formDefaultValues={listing}
                   />
-                  <Button
-                    variant={"ghost"}
-                    className="hover:bg-white/10 cursor-pointer"
-                    // onClick={() => deleteListing(idx)}
-                  >
-                    <Trash2 />
-                  </Button>
+                  <ResponsiveDialogBtn
+                    submitFn={deleteHandleSubmit}
+                    triggerBtn={
+                      <Button
+                        variant={"ghost"}
+                        className="hover:bg-red-500/10 hover:text-red-600 cursor-pointer text-red-500"
+                        // onClick={() => deleteListing(idx)}
+                      >
+                        <Trash2 />
+                      </Button>
+                    }
+                    CustomForm={DeleteForm}
+                    dialogDescription="This project will be deleted, along with all of it's information and images on our database."
+                    dialogTitle="Delete Product"
+                    formDefaultValues={listing}
+                  />
                 </div>
               </div>
             </div>
@@ -231,14 +286,14 @@ function EditForm({
   setOpen,
   defaultValues,
 }: {
-    className?: string;
+  className?: string;
   //eslint-disable-next-line
   submitFn: (value: any) => Promise<void>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   defaultValues?: Crop;
 }) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof editFormSchema>>({
+    resolver: zodResolver(editFormSchema),
     defaultValues: {
       id: defaultValues?._id,
       name: defaultValues?.name,
@@ -254,7 +309,7 @@ function EditForm({
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (value: z.infer<typeof formSchema>) => {
+  const onSubmit = async (value: z.infer<typeof editFormSchema>) => {
     await submitFn(value);
     setOpen(false);
   };
@@ -317,6 +372,80 @@ function EditForm({
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             "Save Changes"
+          )}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+function DeleteForm({
+  className,
+  submitFn,
+  setOpen,
+  defaultValues
+}: {
+  className?: string;
+  //eslint-disable-next-line
+  submitFn: (value: any) => Promise<void>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultValues?: Crop;
+}) {
+  const form = useForm<z.infer<typeof deleteFormSchema>>({
+    resolver: zodResolver(deleteFormSchema),
+    defaultValues: {
+      id: defaultValues?._id,
+      name: defaultValues?.name,
+      confirmDelete: "",
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  const onSubmit = async (value: z.infer<typeof deleteFormSchema>) => {
+    await submitFn(value);
+    setOpen(false);
+  };
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn("grid items-start gap-6 mt-3 w-full", className)}
+      >
+        <FormField
+          control={form.control}
+          name="confirmDelete"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-[15px] font-medium ">Delete</FormLabel>
+              <FormControl>
+                <Input
+                  aria-label="delete"
+                  aria-describedby={`delete-description`}
+                  className="border-black  bg-transparent focus-visible:outline-none focus-visible:ring-0 text-[13px] font-medium text-[rgba(0,0,0,0.80)] tracking-wide"
+                  placeholder="Warning: This action is not reversible. Please be certain."
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription className="text-[12px] font-light italic text-black">
+                To verify, type{" "}
+                <span className="text-red-700">delete my produce</span> above.
+              </FormDescription>
+              <FormMessage id={`delete-error`} />
+            </FormItem>
+          )}
+        />
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="cursor-pointer bg-red-600 hover:bg-red-600/70"
+        >
+          {isSubmitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            "Delete"
           )}
         </Button>
       </form>

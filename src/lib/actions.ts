@@ -62,10 +62,12 @@ export async function removeRoleCookie() {
 }
 
 export async function getAllProduce(revalidate = 360): Promise<Crop[]> {
-  const response = await fetch("https://farmfi-node.onrender.com/product/all", {
-    next: {
-      revalidate
-    }
-  });
+  const response = await fetch("https://farmfi-node.onrender.com/product/all",
+    // {
+    // next: {
+    //   revalidate
+    // }
+    // }
+  );
   return response.json();
 }
