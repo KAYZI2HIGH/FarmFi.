@@ -36,8 +36,8 @@ const editFormSchema = z.object({
   category: z.string().min(2, {
     message: "Please enter either cash crop, staple crop or other.",
   }),
-  description: z.string().min(200, {
-    message: "Your description should exceed 200 characters.",
+  description: z.string().min(100, {
+    message: "Your description should exceed 100 characters.",
   }),
   weight: z.number().positive({
     message: "weight can only be a positive number.",
@@ -47,11 +47,12 @@ const editFormSchema = z.object({
   }),
   produceImages: z
     .any()
-    .refine((files) => files?.length > 0, "At least one image is required")
+    // .refine((files) => files?.length > 0, "At least one image is required") no need to update image
     .refine(
       (files) => files?.every((file: File) => file.size <= 10 * 1024 * 1024),
       "Each file must be less than 10MB"
     ),
+    imgUrl: z.array(z.string()),
 });
 
 const deleteFormSchema = z
@@ -81,7 +82,7 @@ const ManageListingPage = () => {
   const queryClient = useQueryClient();
 
   const editHandleSubmit = async (values: z.infer<typeof editFormSchema>) => {
-    const { id, name, price, category, description, weight, produceImages } =
+    const { id, name, price, category, description, weight, produceImages, imgUrl } =
       values;
     try {
       const formData = new FormData();
@@ -93,14 +94,12 @@ const ManageListingPage = () => {
       formData.append("category", category);
       formData.append("weight", weight.toString());
       formData.append("image", produceImages[0]);
+      formData.append("imgUrl", JSON.stringify(imgUrl));
 
       const response = await fetch(
         `https://farmfi-node.onrender.com/product/update/${id}`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          method: "PUT",
           body: formData,
         }
       );
@@ -108,7 +107,8 @@ const ManageListingPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "something went wrong");
+        console.error(data.error)
+        throw new Error(data.error || "something went wrong");
       }
 
       toast({
@@ -302,6 +302,7 @@ function EditForm({
       price: defaultValues?.price,
       weight: defaultValues?.weight,
       produceImages: [],
+      imgUrl: [defaultValues?.imgUrl[0]], //so that the default url is passed in the body when image doesn't need update
     },
   });
 
