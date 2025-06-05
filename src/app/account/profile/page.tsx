@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth, User } from "@/context/AuthContext";
+import { useWallet } from "@/context/WalletContext";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { cn } from "@/lib/utils";
 import { shortenText } from "@/utils/shortenText";
@@ -41,7 +42,8 @@ const editProfileFormSchema = z.object({
 });
 
 const ProfilePage = () => {
-  const walletAddress = shortenText("0xe064ed7339bea4ubfq34erf0dx9482ef", {
+  const { address, balance } = useWallet()
+  const walletAddress = shortenText(address!, {
     maxLength: 14,
   });
   const { user } = useAuth();
@@ -124,7 +126,7 @@ const ProfilePage = () => {
                 width={20}
                 alt="sui-currency"
               />
-              <h1 className="text-[18px] font-medium">500 USDC</h1>
+              <h1 className="text-[18px] font-medium">{ balance } USDC</h1>
             </div>
             <div className="flex gap-[80px] mt-5">
               <Button
