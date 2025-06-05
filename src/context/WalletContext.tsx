@@ -1,6 +1,6 @@
 // context/WalletContext.tsx
 "use client"
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { getKeypair } from '@/utils/derive';

@@ -16,16 +16,18 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth, User } from "@/context/AuthContext";
 // import { useWallet } from "@/context/WalletContext";
-import { getBalance } from "@/lib/sui/sui-utils"
+import { getBalance } from "@/lib/sui/sui-utils";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { cn } from "@/lib/utils";
 import { shortenText } from "@/utils/shortenText";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Copy, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
+import CopyButton from "@/components/custom-ui/CopyBtn";
 
 const editProfileFormSchema = z.object({
   name: z.string().min(6, { message: "Name must be at least 6 characters." }),
@@ -43,19 +45,22 @@ const editProfileFormSchema = z.object({
 });
 
 const ProfilePage = () => {
-  const [balance, setBalance] = useState(0);
   const { user } = useAuth();
-  //user should be available by now
+  //eslint-disable-next-line
   const walletAddress = shortenText(user?.suiWalletAddress!, {
     maxLength: 14,
   });
   const updateProfile = useUpdateProfile();
 
-  setBalance(getBalance(user?.suiWalletAddress))
+  const { data: balance, isLoading } = useQuery({
+    queryKey: ["balance"],
+    //eslint-disable-next-line
+    queryFn: () => getBalance(user?.suiWalletAddress!),
+  });
 
-  const {} = usequery
-
-  const editHandleSubmit = async (values: z.infer<typeof editProfileFormSchema>) => {
+  const editHandleSubmit = async (
+    values: z.infer<typeof editProfileFormSchema>
+  ) => {
     // const formData = new FormData()
 
     // formData.append("name", values.name)
@@ -67,7 +72,7 @@ const ProfilePage = () => {
       name: values.name,
       email: values.email,
       nin: values.nationalIdentityNumber,
-      image: values.profileImages[0]
+      image: values.profileImages[0],
     };
     updateProfile.mutate(userUpdate);
   };
@@ -120,9 +125,8 @@ const ProfilePage = () => {
                 <p className="text-[11px] font-semibold tracking-wide">
                   {walletAddress}
                 </p>
-                <button className="cursor-pointer">
-                  <Copy className="size-[14px]" />
-                </button>
+                {/*eslint-disable-next-line*/}
+                <CopyButton textToCopy={user?.suiWalletAddress!} />
               </div>
             </div>
             <div className="flex gap-2 items-center justify-center w-fit mt-4">
@@ -132,7 +136,11 @@ const ProfilePage = () => {
                 width={20}
                 alt="sui-currency"
               />
-              <h1 className="text-[18px] font-medium">{ balance } USDC</h1>
+              {isLoading ? (
+                <p>Loading Balance...</p>
+              ) : (
+                <h1 className="text-[18px] font-medium">{balance} USDC</h1>
+              )}
             </div>
             <div className="flex gap-[80px] mt-5">
               <Button

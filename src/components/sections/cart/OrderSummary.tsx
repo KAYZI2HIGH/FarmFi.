@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React from "react";
 import { useWallet } from "@/context/WalletContext";
 import { ResponsiveDialogBtn } from "@/components/custom-ui/ResponsiveDialogBtn";
 import { useToast } from "@/components/custom-ui/toast";
@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const formSchema = z.object({
@@ -23,11 +23,10 @@ const formSchema = z.object({
 
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   const { toast } = useToast();
-  const [tx, setTx] = useState();
+  // const [tx, setTx] = useState();
 
   // Importing the variables for signing transactions
   const { initWallet, keypair, address, suiClient } = useWallet();
-  const { user } = useAuth()
 
   //to bypass unsued variable check
   console.log(keypair, address, suiClient);
@@ -36,6 +35,8 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
     (total, item) => total + item.price * item.weight,
     0
   );
+
+  const queryClient = useQueryClient()
 
 
   const handleOrder = async (password: string) => {
@@ -50,11 +51,9 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         });
         return
     } //handle wrong password
-
-
-      
       // reset cookie
       console.log("keypair is available:", keypair.getPublicKey())
+      queryClient.invalidateQueries({queryKey: ["balance"]})
       await clearCart();
     } catch (err) {
       toast({
