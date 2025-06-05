@@ -15,7 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth, User } from "@/context/AuthContext";
-import { useWallet } from "@/context/WalletContext";
+// import { useWallet } from "@/context/WalletContext";
+import { getBalance } from "@/lib/sui/sui-utils"
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { cn } from "@/lib/utils";
 import { shortenText } from "@/utils/shortenText";
@@ -42,12 +43,17 @@ const editProfileFormSchema = z.object({
 });
 
 const ProfilePage = () => {
-  const { address, balance } = useWallet()
-  const walletAddress = shortenText(address!, {
+  const [balance, setBalance] = useState(0);
+  const { user } = useAuth();
+  //user should be available by now
+  const walletAddress = shortenText(user?.suiWalletAddress!, {
     maxLength: 14,
   });
-  const { user } = useAuth();
   const updateProfile = useUpdateProfile();
+
+  setBalance(getBalance(user?.suiWalletAddress))
+
+  const {} = usequery
 
   const editHandleSubmit = async (values: z.infer<typeof editProfileFormSchema>) => {
     // const formData = new FormData()

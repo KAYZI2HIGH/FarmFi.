@@ -12,6 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 
 const formSchema = z.object({
@@ -23,8 +24,10 @@ const formSchema = z.object({
 const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   const { toast } = useToast();
   const [tx, setTx] = useState();
+
   // Importing the variables for signing transactions
-  const { keypair, address, suiClient } = useWallet();
+  const { initWallet, keypair, address, suiClient } = useWallet();
+  const { user } = useAuth()
 
   //to bypass unsued variable check
   console.log(keypair, address, suiClient);
@@ -34,50 +37,24 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
     0
   );
 
-  //hardcoding the product
-  const product = {
-    _id: "682fb9eefedd859ffcfbc5b8",
-    price: 3,
-    farmer: "6830a5fd26a731b08230f6a4",
-    suiWalletAddress:
-      "0xcaec2af7f3d0d2227e4b2b0efa47d3f99ccf696f8368a1e577b42fe0a3549f6f",
-  };
 
   const handleOrder = async (password: string) => {
-    console.log("sending");
-
-    try {
-      const orderres = await fetch(
-        "https://farmfi-node.onrender.com/order/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            buyer: "test1234@gmail.com",
-            product,
-            password,
-          }),
-        }
-      );
-
-      const orderdata = await orderres.json();
-      setTx(orderdata.serializedTransaction);
-      console.log(tx);
-      const digest = orderdata.serializedTransaction.digest;
-      console.log(digest);
-      alert(digest);
-      if (!orderres.ok) {
-        toast({
-          message: "Something went wrong, please try again later.",
+    try {    console.log("sending");
+    //initialize wallet and get keypair
+    await initWallet(password)
+    
+    if(!keypair){
+       toast({
+          message: "Wrong passwword.",
           duration: 3000,
         });
-        throw new Error("Something went wrong");
-      }
-      // signSuiTransaction()
+        return
+    } //handle wrong password
 
+
+      
       // reset cookie
+      console.log("keypair is available:", keypair.getPublicKey())
       await clearCart();
     } catch (err) {
       toast({
