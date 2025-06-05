@@ -11,7 +11,7 @@ interface WalletContextType {
   keypair: Ed25519Keypair | null;
   address: string | null;
   suiClient: SuiClient;
-  balance: number;
+  balance: number | 0;
   setBalance: (value: number) => void;
 }
 
@@ -58,7 +58,8 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
         console.log(kp.getPublicKey().toSuiAddress() == user.suiWalletAddress)
         setKeypair(kp)
         setAddress(kp.getPublicKey().toSuiAddress())
-        if(address) setBalance(await getBalance(address))
+
+        if(user) setBalance(await getBalance(user.suiWalletAddress)) //using the info stored in user, in case password isn't available yet
       } catch(error){
         console.log("failed to get keypair",error)
       }
