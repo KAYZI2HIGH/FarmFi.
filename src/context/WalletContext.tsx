@@ -35,6 +35,9 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
       })
 
         const { mnemonic } = await res.json()
+        if (!res.ok || res.status !== 200){
+          return
+        }
 
         const kp = await getKeypair(mnemonic, password)
 

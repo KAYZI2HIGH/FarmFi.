@@ -1,6 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519"
-import { sui_conversion, client } from "./sui-constants";
+import { sui_conversion, client, network } from "./sui-constants";
+import { getFaucetHost, requestSuiFromFaucetV2 } from "@mysten/sui/faucet"
 
 //return the payment coin that was created in the first coin object of the user's wallet
 export const getSplitCoin = async (wallet: string, amount:number) => {
@@ -31,7 +32,7 @@ export const getBalance = async (wallet: string) => {  //, type: string) => {
     for(let i=0; i<=ownedCoins.length-1; i++){
         balance += Number(ownedCoins[i].balance)
     }
-    return balance
+    return balance / sui_conversion
 }
 
 //todo, create a function that goes through the wallet with 2 coins of value 10 and gets a coin of value 13
@@ -49,7 +50,7 @@ export const extractPayment = async (prc: number, keypair:Ed25519Keypair) => {
 
     if (ownedCoins.length === 0 || (ownedCoins.length == 1 && Number(ownedCoins[0].balance) < price)){
         console.log("not enough balance")
-        return
+        throw new Error("not enough balance")
     }
     const destination_coin = ownedCoins[0] //splitting the payment from their first coin object
     for(let i = 1; i <= ownedCoins.length; i++){
@@ -67,4 +68,18 @@ export const extractPayment = async (prc: number, keypair:Ed25519Keypair) => {
     await client.waitForTransaction({digest: digest});
     const coin = await getSplitCoin(wallet, price)
     return coin
+}
+
+//pending implementation of the planned onRamp flow for mainnet migration.
+// //we use this to faucet test coins on tesnet
+export const faucetAddress = async (wallet: string) =>{
+    const result = await requestSuiFromFaucetV2({
+        host: getFaucetHost(network),
+        recipient: wallet
+    })
+    console.log(result)
+    if(result){
+        return true
+    }
+    return false
 }

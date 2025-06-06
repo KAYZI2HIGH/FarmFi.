@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { useWallet } from "@/context/WalletContext";
+import { useAuth } from "@/context/AuthContext";
 import { ResponsiveDialogBtn } from "@/components/custom-ui/ResponsiveDialogBtn";
 import { useToast } from "@/components/custom-ui/toast";
 import { clearCart } from "@/lib/actions";
@@ -27,9 +28,11 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
 
   // Importing the variables for signing transactions
   const { initWallet, keypair, address, suiClient } = useWallet();
+  const { user } = useAuth()
 
   //to bypass unsued variable check
   console.log(keypair, address, suiClient);
+  console.log(keypair?.getPublicKey().toSuiAddress() == user?.suiWalletAddress);
 
   const total = cart.reduce(
     (total, item) => total + item.price * item.weight,
@@ -40,20 +43,25 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
 
 
   const handleOrder = async (password: string) => {
-    try {    console.log("sending");
-    //initialize wallet and get keypair
-    await initWallet(password)
+    try {    
+      console.log("sending");
+      //initialize wallet and get keypair
+      await initWallet(password)
     
-    if(!keypair){
-       toast({
+      if(!keypair){
+        //handle wrong password
+        toast({
           message: "Wrong passwword.",
           duration: 3000,
         });
         return
-    } //handle wrong password
+      } 
+
       // reset cookie
       console.log("keypair is available:", keypair.getPublicKey())
       queryClient.invalidateQueries({queryKey: ["balance"]})
+
+      //will later also clear the wallet  context, once transaction is done
       await clearCart();
     } catch (err) {
       toast({

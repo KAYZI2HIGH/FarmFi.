@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth, User } from "@/context/AuthContext";
 // import { useWallet } from "@/context/WalletContext";
-import { getBalance } from "@/lib/sui/sui-utils";
+import { faucetAddress, getBalance } from "@/lib/sui/sui-utils";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { cn } from "@/lib/utils";
 import { shortenText } from "@/utils/shortenText";
@@ -52,7 +52,7 @@ const ProfilePage = () => {
   });
   const updateProfile = useUpdateProfile();
 
-  const { data: balance, isLoading } = useQuery({
+  const { data: balance, isLoading, refetch } = useQuery({
     queryKey: ["balance"],
     //eslint-disable-next-line
     queryFn: () => getBalance(user?.suiWalletAddress!),
@@ -76,6 +76,15 @@ const ProfilePage = () => {
     };
     updateProfile.mutate(userUpdate);
   };
+
+  const handleDeposit = async () => {
+    if (!user) return //very rare use case
+    const result = await faucetAddress(user.suiWalletAddress)
+    if(result){
+      console.log(result)
+    }
+    refetch()
+  }
 
   return (
     <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
@@ -145,6 +154,7 @@ const ProfilePage = () => {
             <div className="flex gap-[80px] mt-5">
               <Button
                 variant={"ghost"}
+                onClick={handleDeposit}
                 className="text-[13px] font-semibold hover:bg-white/60 cursor-pointer"
               >
                 Deposit{" "}
