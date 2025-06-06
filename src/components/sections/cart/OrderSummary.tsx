@@ -16,6 +16,7 @@ import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { extractPayment } from "@/lib/sui/sui-utils";
 import { Transaction } from "@mysten/sui/transactions";
+import { network } from "@/lib/sui/sui-constants";
 
 
 const formSchema = z.object({
@@ -95,6 +96,7 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
 
       const response = await suiClient.waitForTransaction({ digest })
       console.log(response)
+      toast({message:`order escrow created at ${order_id} on ${network}`})
 
 
       //will later also clear the wallet  context, once transaction is done

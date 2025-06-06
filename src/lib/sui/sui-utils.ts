@@ -83,5 +83,3 @@ export const faucetAddress = async (wallet: string) =>{
     }
     return false
 }
-
-export const completeOrderTransaction = ()o
