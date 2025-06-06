@@ -18,7 +18,8 @@ interface Review {
 
 interface farmer {
   _id: string,
-  name: string
+  name: string,
+  suiWalletAddress: string,
 }
 
 interface Crop {

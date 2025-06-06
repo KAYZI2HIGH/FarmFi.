@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { extractPayment } from "@/lib/sui/sui-utils";
+import { Transaction } from "@mysten/sui/transactions";
 
 
 const formSchema = z.object({
@@ -57,9 +59,43 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         return
       } 
 
+      const paymentCoin = await extractPayment(total, keypair)
+
       // reset cookie
       console.log("keypair is available:", keypair.getPublicKey())
       queryClient.invalidateQueries({queryKey: ["balance"]})
+
+      const res = await fetch("https://farmfi-node.onrender.com/order/create", {
+        method: "POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          buyer:user?.email,
+          products: cart,
+          price: total,
+          payment: paymentCoin,
+        })
+      })
+
+      if(!res.ok || res.status !== 200){
+        toast({message:"Error creating transaction block", duration:2000})
+        return
+      }
+      const { serializedTransaction: txBytes, order_id } = await res.json()
+      const tx = Transaction.from(txBytes)
+      const { digest } = await suiClient.signAndExecuteTransaction({
+        transaction: tx,
+        signer: keypair,
+        options: {
+          showObjectChanges: true,
+          showEvents: true,
+        }
+      })
+
+      const response = await suiClient.waitForTransaction({ digest })
+      console.log(response)
+
 
       //will later also clear the wallet  context, once transaction is done
       await clearCart();
