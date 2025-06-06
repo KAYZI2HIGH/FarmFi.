@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import CopyButton from "@/components/custom-ui/CopyBtn";
+import { useToast } from "@/components/custom-ui/toast";
 
 const editProfileFormSchema = z.object({
   name: z.string().min(6, { message: "Name must be at least 6 characters." }),
@@ -46,6 +47,7 @@ const editProfileFormSchema = z.object({
 
 const ProfilePage = () => {
   const { user } = useAuth();
+  const { toast } = useToast()
   //eslint-disable-next-line
   const walletAddress = shortenText(user?.suiWalletAddress!, {
     maxLength: 14,
@@ -77,13 +79,20 @@ const ProfilePage = () => {
     updateProfile.mutate(userUpdate);
   };
 
+
+  //will ask Lydia to design a disclaimer popup that is a faucet and not an actual onRamp integrated setup
   const handleDeposit = async () => {
     if (!user) return //very rare use case
     const result = await faucetAddress(user.suiWalletAddress)
-    if(result){
+    if(!result){
       console.log(result)
+      toast({
+        message: "deposit failed",
+        duration: 3000
+      })
+      return
     }
-    refetch()
+    refetch() //debug why it didn't refresh after faucet
   }
 
   return (
