@@ -98,7 +98,7 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
 
       const response = await suiClient.waitForTransaction({ digest })
       console.log(response)
-      toast({message:`order escrow created at ${order_id} on ${network}`, duration:4000})
+      toast({message:`order escrow created at ${order_id} on ${network} with digest ${digest}`, duration:4000})
 
 
       //will later also clear the wallet  context, once transaction is done
