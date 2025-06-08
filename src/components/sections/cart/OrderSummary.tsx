@@ -17,7 +17,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { extractPayment } from "@/lib/sui/sui-utils";
 import { Transaction } from "@mysten/sui/transactions";
 import { network } from "@/lib/sui/sui-constants";
-
+import { fromBase64 } from "@mysten/sui/utils"
 
 const formSchema = z.object({
   pin: z
@@ -30,11 +30,10 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
   // const [tx, setTx] = useState();
 
   // Importing the variables for signing transactions
-  const { initWallet, keypair, address, suiClient } = useWallet();
+  const { initWallet, keypair, suiClient } = useWallet();
   const { user } = useAuth()
 
   //to bypass unsued variable check
-  console.log(keypair, address, suiClient);
   console.log(keypair?.getPublicKey().toSuiAddress() == user?.suiWalletAddress);
 
   const total = cart.reduce(
@@ -49,9 +48,10 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
     try {    
       console.log("sending");
       //initialize wallet and get keypair
-      await initWallet(password)
+      const walletKeypair = await initWallet(password)
+      // console.log(keypair, total, walletInitResponse)
     
-      if(!keypair){
+      if(!walletKeypair){
         //handle wrong password
         toast({
           message: "Wrong passwword.",
@@ -60,10 +60,9 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         return
       } 
 
-      const paymentCoin = await extractPayment(total, keypair)
+      const paymentCoin = await extractPayment(total, walletKeypair)
 
       // reset cookie
-      console.log("keypair is available:", keypair.getPublicKey())
       queryClient.invalidateQueries({queryKey: ["balance"]})
 
       const res = await fetch("https://farmfi-node.onrender.com/order/create", {
@@ -83,16 +82,19 @@ const OrderSummary = ({ cart }: { cart: Crop[] }) => {
         toast({message:"Error creating transaction block", duration:2000})
         return
       }
-      const { serializedTransaction: txBytes, order_id } = await res.json()
+      const { serializedTransaction: txBytesB64, order_id } = await res.json()
+      const txBytes = fromBase64(txBytesB64)
       const tx = Transaction.from(txBytes)
       const { digest } = await suiClient.signAndExecuteTransaction({
         transaction: tx,
-        signer: keypair,
+        signer: walletKeypair,
         options: {
           showObjectChanges: true,
           showEvents: true,
         }
       })
+
+      console.log(digest)
 
       const response = await suiClient.waitForTransaction({ digest })
       console.log(response)

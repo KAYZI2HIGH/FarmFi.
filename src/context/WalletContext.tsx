@@ -5,9 +5,10 @@ import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { getKeypair } from '@/utils/derive';
 import { useAuth } from './AuthContext';
+import { network } from '@/lib/sui/sui-constants';
 
 interface WalletContextType {
-  initWallet: (value: string) => void;
+  initWallet: (value: string) =>  Promise<Ed25519Keypair | undefined>;
   keypair: Ed25519Keypair | null;
   address: string | null;
   suiClient: SuiClient;
@@ -20,7 +21,7 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
   const [keypair, setKeypair] = useState<Ed25519Keypair | null>(null);
   const [address, setAddress] = useState<string | null>(null);
 
-  const suiClient = new SuiClient({ url: getFullnodeUrl('testnet') });
+  const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
 
   const { user } = useAuth()
   
@@ -36,7 +37,7 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
 
         const { mnemonic } = await res.json()
         if (!res.ok || res.status !== 200){
-          return
+          return 
         }
 
         const kp = await getKeypair(mnemonic, password)
@@ -44,8 +45,10 @@ export const WalletProvider = ({ children }: {children: React.ReactNode}) => {
         //setting the global contexts
         setKeypair(kp)
         setAddress(kp.getPublicKey().toSuiAddress())
+        return kp
       } catch(error){
         console.log("failed to get keypair",error)
+        return 
       }
     }
 
