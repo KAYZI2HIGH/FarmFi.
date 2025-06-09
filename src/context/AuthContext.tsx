@@ -105,10 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    Cookies.remove("authToken", {
-      path: "/",
-      domain: window.location.hostname,
-    });
+    Cookies.remove("authToken");
     setUser(null);
   };
 
