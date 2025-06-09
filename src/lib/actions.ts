@@ -34,10 +34,10 @@ export async function addToCart(
   return cart;
 }
 
-export async function removeFromCart(id: string): Promise<Crop[]> {
+export async function removeFromCart(id: string) {
   const cart = (await getCart()).filter((item) => item._id !== id);
   await saveCart(cart);
-  return cart;
+  return;
 }
 
 export async function clearCart(): Promise<void> {

@@ -23,12 +23,21 @@ import { shortenText } from "@/utils/shortenText";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import CopyButton from "@/components/custom-ui/CopyBtn";
 import { useToast } from "@/components/custom-ui/toast";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const editProfileFormSchema = z.object({
   name: z.string().min(6, { message: "Name must be at least 6 characters." }),
@@ -47,14 +56,20 @@ const editProfileFormSchema = z.object({
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const [isProcessingDeposit, setIsProcessingDeposit] = useState(false);
+  const [dialogDefaultOpen, setDialogDefaultOpen] = useState(false);
   //eslint-disable-next-line
   const walletAddress = shortenText(user?.suiWalletAddress!, {
     maxLength: 14,
   });
   const updateProfile = useUpdateProfile();
 
-  const { data: balance, isLoading, refetch } = useQuery({
+  const {
+    data: balance,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["balance"],
     //eslint-disable-next-line
     queryFn: () => getBalance(user?.suiWalletAddress!),
@@ -79,21 +94,30 @@ const ProfilePage = () => {
     updateProfile.mutate(userUpdate);
   };
 
-
   //will ask Lydia to design a disclaimer popup that is a faucet and not an actual onRamp integrated setup
   const handleDeposit = async () => {
-    if (!user) return //very rare use case
-    const result = await faucetAddress(user.suiWalletAddress)
-    if(!result){
-      console.log(result)
+    setIsProcessingDeposit(true);
+    if (!user) {
+      setIsProcessingDeposit(false);
+      return;
+    } //very rare use case
+    const result = await faucetAddress(user.suiWalletAddress);
+    if (!result) {
+      console.log(result);
       toast({
-        message: "deposit failed",
-        duration: 3000
-      })
-      return
+        message: "Deposit failed",
+        duration: 3000,
+      });
+      return;
     }
-    refetch() //debug why it didn't refresh after faucet
-  }
+    toast({
+      message: "Deposit successfull!",
+      duration: 3000,
+    });
+    refetch(); //debug why it didn't refresh after faucet
+    setIsProcessingDeposit(false);
+    setDialogDefaultOpen(false);
+  };
 
   return (
     <section className="space-y-[40px] md:space-y-[60px] w-full px-5 lg:px-[60px]">
@@ -154,26 +178,60 @@ const ProfilePage = () => {
                 width={20}
                 alt="sui-currency"
               />
-              {isLoading ? (
-                <p>Loading Balance...</p>
+              {isLoading || isProcessingDeposit ? (
+                <Loader2 className="animate-spin size-[16px]" />
               ) : (
                 <h1 className="text-[18px] font-medium">{balance} USDC</h1>
               )}
             </div>
             <div className="flex gap-[80px] mt-5">
-              <Button
-                variant={"ghost"}
-                onClick={handleDeposit}
-                className="text-[13px] font-semibold hover:bg-white/60 cursor-pointer"
-              >
-                Deposit{" "}
-                <Image
-                  src={"/icons/download_icon.svg"}
-                  height={15}
-                  width={14}
-                  alt="download icon"
-                />
-              </Button>
+              <Dialog open={dialogDefaultOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => setDialogDefaultOpen(true)}
+                    className="text-[13px] font-semibold hover:bg-white/60 cursor-pointer"
+                  >
+                    Deposit{" "}
+                    <Image
+                      src={"/icons/download_icon.svg"}
+                      height={15}
+                      width={14}
+                      alt="download icon"
+                    />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] border-none">
+                  <DialogHeader>
+                    <DialogTitle className="text-[18px] font-medium">
+                      Disclaimer: the tokens used are from the SUI testnet and
+                      are for demo purposes only.
+                    </DialogTitle>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button
+                        variant="outline"
+                        onClick={() => setDialogDefaultOpen(false)}
+                        className="border-black hover:bg-black/70 hover:text-white cursor-pointer duration-300"
+                      >
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      disabled={isProcessingDeposit}
+                      className="cursor-pointer bg-[var(--forest-green)] hover:bg-[var(--forest-green)]/90"
+                      onClick={handleDeposit}
+                    >
+                      {isProcessingDeposit ? (
+                        <Loader2 className="animate-spin size-[16px]" />
+                      ) : (
+                        "Proceed"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <Button
                 variant={"ghost"}
                 className="text-[13px] font-semibold flex items-center justify-center hover:bg-white/60 cursor-pointer"
